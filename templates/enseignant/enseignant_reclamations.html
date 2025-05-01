@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Réclamations - {{ matiere.nom }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f6f5;
+            margin: 0;
+            padding: 40px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #2e8a67;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #2e8a67;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f1fdf8;
+        }
+
+        .btn {
+            background-color: #2e8a67;
+            color: white;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+        .btn:hover {
+            background-color: #28a776;
+        }
+
+        .danger {
+            background-color: #c0392b;
+        }
+
+        .danger:hover {
+            background-color: #e74c3c;
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 30px;
+            text-align: center;
+            color: #2e8a67;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .no-data {
+            text-align: center;
+            margin-top: 20px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>📋 Réclamations - {{ matiere.nom }} ({{ matiere.parcours }} {{ matiere.niveau }})</h2>
+
+        {% if reclamations %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Numéro</th>
+                    <th>Étudiant</th>
+                    <th>Commentaire</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reclam in reclamations %}
+                <tr>
+                    <td>{{ reclam.numero_etudiant }}</td>
+                    <td>{{ reclam.nom_etudiant }}</td>
+                    <td>{{ reclam.commentaire }}</td>
+                    <td>{{ reclam.status }}</td>
+                    <td>
+                        {% if reclam.status == "En attente" %}
+                            <a class="btn" href="{{ url_for('enseignant.repondre_reclamation', reclamation_id=reclam._id, action='accepter') }}">✅ Accepter</a>
+                            <a class="btn danger" href="{{ url_for('enseignant.repondre_reclamation', reclamation_id=reclam._id, action='refuser') }}">❌ Refuser</a>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+            <p class="no-data">Aucune réclamation pour cette matière.</p>
+        {% endif %}
+
+        <form method="POST" action="{{ url_for('enseignant.supprimer_reclamations_traitees_matiere', matiere_id=matiere._id) }}" style="text-align: center; margin-top: 20px;">
+            <button class="btn danger" type="submit" onclick="return confirm('Voulez-vous vraiment supprimer les réclamations traitées pour cette matière ?');">
+                🗑 Supprimer les réclamations traitées
+            </button>
+        </form>
+
+        <a class="back-link" href="{{ url_for('enseignant.dashboard') }}">⬅️ Retour au tableau de bord enseignant</a>
+    </div>
+</body>
+</html>

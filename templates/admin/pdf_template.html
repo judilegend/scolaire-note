@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Bulletin de {{ etudiant.nom }}</title>
+    <style>
+        body {
+            font-family: 'DejaVu Sans', Arial, sans-serif;
+            font-size: 12px;
+            line-height: 1.6;
+            margin: 40px;
+            color: #333;
+        }
+
+        h1, h2 {
+            text-align: center;
+            margin: 0;
+        }
+
+        h1 {
+            font-size: 22px;
+            color: #2e8a67;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        p {
+            margin: 6px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+        }
+
+        th, td {
+            border: 1px solid #555;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #e0f0e7;
+            font-weight: bold;
+        }
+
+        .info {
+            margin-top: 20px;
+            font-size: 13px;
+        }
+
+        .footer {
+            margin-top: 40px;
+            text-align: right;
+        }
+
+        .message {
+            margin-top: 30px;
+            font-size: 14px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Bulletin Scolaire Officiel</h1>
+    <h2>{{ etudiant.nom }} – N° CE : {{ etudiant.numero }}</h2>
+
+    <div class="info">
+        <p><strong>Parcours :</strong> {{ etudiant.parcours }} | <strong>Niveau :</strong> {{ etudiant.niveau }}</p>
+        <p><strong>Email :</strong> {{ etudiant.email }}</p>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Matière</th>
+                <th>Note</th>
+                <th>Coefficient</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for matiere in matieres %}
+            <tr>
+                <td>{{ matiere.nom }}</td>
+                <td>{{ notes.get(matiere.nom, '—') }}</td>
+                <td>{{ matiere.coefficient }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <p class="info"><strong>Moyenne Générale :</strong> {{ "%.2f"|format(moyenne) }}/20</p>
+
+    <p class="message">
+        {% if moyenne >= 10 %}
+            🎉 Félicitations ! Vous avez validé votre semestre avec succès. Continuez ainsi !
+        {% else %}
+            ⚠️ Résultats insuffisants. Ne baissez pas les bras, persévérez pour progresser !
+        {% endif %}
+    </p>
+
+    <p class="footer">Fait le : {{ current_date }}</p>
+
+</body>
+</html>

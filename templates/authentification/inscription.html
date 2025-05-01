@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IMAJIN - Inscription</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/auth.css') }}"
+    />
+    <style>
+      .register-btn {
+        background-color: #e0f7fa;
+        color: white;
+        padding: 8px 20px;
+        font-size: small;
+        border-radius: 20px;
+        transition: background-color 0.3s;
+      }
+
+      .register-btn:hover {
+        background-color: #bbd8dc;
+      }
+      .left-section {
+        height: 500px;
+      }
+    </style>
+    <script>
+      function afficherFormulaire() {
+        const role = document.getElementById("role").value;
+        document.getElementById("form_etudiant").style.display =
+          role === "etudiant" ? "block" : "none";
+        document.getElementById("form_enseignant").style.display =
+          role === "enseignant" ? "block" : "none";
+        document.getElementById("form_admin").style.display =
+          role === "admin" ? "block" : "none";
+      }
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <div class="logo">
+          <a href="/">
+            <span class="logo-icon">🎓</span>
+          </a>
+        </div>
+        <div class="nav">
+          <a href="/connection">se connecter</a>
+          <a href="#" class="register-btn">inscrire</a>
+        </div>
+      </header>
+
+      <div class="main-content">
+        <div class="left-section">
+          <div class="blob-background">
+            <!-- Background effect achieved with CSS gradients -->
+          </div>
+          <div class="left-content">
+            <h1>Bienvenue!</h1>
+            <p>Rejoignez notre plateforme scolaire</p>
+          </div>
+          <div class="arrow-icon">➜</div>
+        </div>
+
+        <div class="right-section">
+          <h2>Inscription</h2>
+
+          <div class="separator">Ou inscrivez-vous avec votre email</div>
+
+          <form method="POST">
+            <div class="form-group">
+              <select
+                name="role"
+                id="role"
+                class="form-control"
+                required
+                onchange="afficherFormulaire()"
+              >
+                <option value="">-- Sélectionnez votre rôle --</option>
+                <option value="etudiant">Étudiant</option>
+                <option value="enseignant">Enseignant</option>
+              </select>
+            </div>
+
+            <!-- Étudiant -->
+            <div
+              id="form_etudiant"
+              class="role-specific-fields"
+              style="display: none"
+            >
+              <div class="form-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  name="numero"
+                  placeholder="Numéro de carte"
+                />
+              </div>
+              <div class="form-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  name="nom"
+                  placeholder="Nom"
+                />
+              </div>
+              <div class="form-group">
+                <!-- <input
+                  type="text"
+                  class="form-control"
+                  name="parcours"
+                  placeholder="Parcours"
+                /> -->
+                <select
+                  name="parcours"
+                  type="text"
+                  class="form-control"
+                  placeholder="Parcours"
+                >
+                  <option value="GID">GID</option>
+                  <option value="OCC">OCC</option>
+                  <option value="MDI">MDI</option>
+                  <option value="GB">GB</option>
+                  <option value="ASR">ASR</option>
+                  <option value="IG">IG</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <!-- <input
+                  type="text"
+                  class="form-control"
+                  name="niveau"
+                  placeholder="Niveau"
+                /> -->
+                <select
+                  type="text"
+                  class="form-control"
+                  name="niveau"
+                  placeholder="Niveau"
+                >
+                  <option value="L1">L1</option>
+                  <option value="L1">L2</option>
+                  <option value="L1">L3</option>
+                  <option value="L1">M1</option>
+                  <option value="L1">M2</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Enseignant -->
+            <div
+              id="form_enseignant"
+              class="role-specific-fields"
+              style="display: none"
+            >
+              <div class="form-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  name="nom_enseignant"
+                  placeholder="Nom"
+                />
+              </div>
+              <div class="form-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  name="matiere"
+                  placeholder="Matière enseignée"
+                />
+              </div>
+            </div>
+
+            <!-- Admin -->
+            <div
+              id="form_admin"
+              class="role-specific-fields"
+              style="display: none"
+            >
+              <div class="form-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  name="nom_admin"
+                  placeholder="Nom"
+                />
+              </div>
+              <div class="form-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  name="identifiant"
+                  placeholder="Identifiant administratif"
+                />
+              </div>
+            </div>
+
+            <!-- Commun -->
+            <div class="form-group">
+              <input
+                type="email"
+                class="form-control"
+                name="email"
+                placeholder="Email"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <input
+                type="password"
+                class="form-control"
+                name="mot_de_passe"
+                placeholder="Mot de passe"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <input
+                type="password"
+                class="form-control"
+                placeholder="Confirmer le mot de passe"
+                required
+              />
+            </div>
+
+            <div class="form-check">
+              <input
+                type="checkbox"
+                id="terms"
+                class="form-check-input"
+                required
+              />
+              <label for="terms" class="form-check-label">
+                J'accepte les conditions d'utilisation et la politique de
+                confidentialité
+              </label>
+            </div>
+
+            <button type="submit" class="submit-btn">S'INSCRIRE</button>
+
+            <div class="links">
+              <p>Déjà inscrit ? <a href="/connection">Se connecter</a></p>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="footer-section logo">
+          <h4>MY-Notes</h4>
+          <p>
+            Plateforme de gestion scolaire<br />pour les étudiants,
+            enseignants<br />et administrateurs.
+          </p>
+        </div>
+
+        <div class="footer-section">
+          <h4 class="footer-title">NAVIGATION</h4>
+          <div class="footer-links">
+            <a href="#">Accueil</a>
+            <a href="#">À propos</a>
+            <a href="#">Services</a>
+            <a href="#">Contact</a>
+          </div>
+        </div>
+
+        <div class="footer-section">
+          <h4 class="footer-title">SERVICES</h4>
+          <div class="footer-links">
+            <a href="#">Gestion des notes</a>
+            <a href="#">Emploi du temps</a>
+            <a href="#">Ressources pédagogiques</a>
+            <a href="#">Messagerie</a>
+          </div>
+        </div>
+
+        <div class="footer-section">
+          <h4 class="footer-title">CONTACT</h4>
+          <div class="footer-links">
+            <a href="#">Support technique</a>
+            <a href="#">FAQ</a>
+            <a href="#">Signaler un problème</a>
+          </div>
+          <div class="social-media">
+            <a href="#" class="social-icon-footer">f</a>
+            <a href="#" class="social-icon-footer">in</a>
+            <a href="#" class="social-icon-footer">t</a>
+            <a href="#" class="social-icon-footer">ig</a>
+          </div>
+          <div class="language-selector"><i>🌐</i> Français - Fr</div>
+        </div>
+      </div>
+
+      <div class="copyright">© IMAJIN Plateforme Scolaire 2023</div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des comptes en attente</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f7f9fc;
+            padding: 40px;
+            color: #333;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        thead {
+            background-color: #2e8a67;
+            color: #fff;
+        }
+
+        th, td {
+            padding: 14px 16px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tbody tr:hover {
+            background-color: #f0f0f0;
+        }
+
+        a {
+            color: #2e8a67;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        button {
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .accept {
+            background-color: #28a776;
+            color: white;
+        }
+
+        .refuse {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .accept:hover {
+            background-color: #239765;
+        }
+
+        .refuse:hover {
+            background-color: #c0392b;
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .back-link a {
+            background-color: #2e8a67;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+
+        .back-link a:hover {
+            background-color: #28a776;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>🕒 Comptes en attente de validation</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>👤 Nom</th>
+                <th>📧 Email</th>
+                <th>🛠️ Rôle demandé</th>
+                <th>🔍 Détails du profil</th>
+                <th>✅/❌ Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in utilisateurs_en_attente %}
+            <tr>
+                <td>{{ user.nom }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.role }}</td>
+                <td><a href="{{ url_for('admin.consulter_profil', user_id=user._id) }}">Voir Profil</a></td>
+                <td>
+                    <form method="POST" action="{{ url_for('admin.accepter_utilisateur', user_id=user._id) }}" style="display:inline-block;">
+                        <button type="submit" class="accept" onclick="return confirm('✅ Confirmer l\'approbation de ce compte ?')">Accepter</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('admin.refuser_utilisateur', user_id=user._id) }}" style="display:inline-block;">
+                        <button type="submit" class="refuse" onclick="return confirm('❌ Refuser définitivement ce compte ?')">Refuser</button>
+                    </form>   
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="back-link">
+        <a href="{{ url_for('admin.dashboard') }}">⬅️ Retour au tableau de bord</a>
+    </div>
+
+</body>
+</html>

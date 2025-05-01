@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Admin</title>
+<style>
+/* Style de base pour le corps de la page */
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to right, #e0f7fa, #ffffff);
+  margin: 0;
+  padding: 30px;
+  color: #333;
+}
+
+/* Style du titre principal */
+h1 {
+  color: #2c3e50;
+  font-size: 2.5em;
+  margin-bottom: 20px;
+  text-align: center;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Style du paragraphe descriptif */
+.description {
+  text-align: center;
+  font-size: 18px;
+  margin-bottom: 40px;
+  color: #555;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Layout principal en flexbox pour le tableau de bord */
+.dashboard {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 25px;
+  margin-bottom: 40px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Style des cartes individuelles */
+.dashboard div {
+  background-color: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  width: 250px;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Animation au survol des cartes */
+.dashboard div:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+/* Style des liens principaux */
+.dashboard div a {
+  display: block;
+  color: #2e8a67;
+  font-size: 18px;
+  font-weight: 600;
+  text-decoration: none;
+  margin: 10px 0;
+}
+
+/* Effet au survol des liens */
+.dashboard div a:hover {
+  color: #28a776;
+}
+
+/* Style des descriptions des cartes */
+.dashboard div span {
+  display: block;
+  margin-top: 12px;
+  font-size: 14px;
+  color: #666;
+  line-height: 1.4;
+}
+
+/* Style du bouton de déconnexion */
+.logout {
+  background-color: #e74c3c;
+  color: white;
+  padding: 15px 25px;
+  border-radius: 8px;
+  font-size: 18px;
+  max-width: 250px;
+  margin: 30px auto 0;
+  text-align: center;
+  display: block;
+  text-decoration: none;
+  font-weight: 500;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transition: background-color 0.3s ease;
+}
+
+/* Effet au survol du bouton de déconnexion */
+.logout:hover {
+  background-color: #c0392b;
+}
+
+/* Effet au clic du bouton de déconnexion */
+.logout:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Media query pour l'adaptation aux petits écrans */
+@media (max-width: 768px) {
+  .dashboard div {
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  body {
+    padding: 15px;
+  }
+  
+  h1 {
+    font-size: 2em;
+  }
+}
+</style>
+</head>
+<body>
+<!-- Titre principal avec nom d'utilisateur dynamique -->
+<h1>Bienvenue, {{ user.nom }} (Admin)</h1>
+
+<!-- Description du tableau de bord -->
+<p class="description">Gérez les étudiants, les matières, et les résultats directement depuis ce tableau de bord interactif.</p>
+
+<!-- Conteneur principal avec les différentes cartes d'action -->
+<div class="dashboard">
+  <div>
+    <a href="{{ url_for('admin.gerer_etudiants') }}">👥 Gérer les étudiants</a>
+    <span>Ajoutez, modifiez ou supprimez des étudiants.</span>
+  </div>
+  <div>
+    <a href="{{ url_for('admin.matieres') }}">📚 Gérer les matières</a>
+    <span>Créez, mettez à jour ou supprimez des matières proposées.</span>
+  </div>
+  <div>
+    <a href="{{ url_for('admin.gestion_notes') }}">📝 Gérer les notes</a>
+    <span>Saisissez et gérez les notes des étudiants pour chaque matière.</span>
+  </div>
+  <div>
+    <a href="{{ url_for('admin.publier_resultats') }}">📊 Publier les résultats</a>
+    <span>Publiez les résultats des étudiants après vérification des notes.</span>
+  </div>
+  <div>
+    <a href="{{ url_for('admin.liste_attente') }}">⏳ Liste des attentes</a>
+    <span>Consultez les étudiants en attente d'acceptation ou de validation.</span>
+  </div>
+</div>
+
+<!-- Bouton de déconnexion avec confirmation -->
+<a class="logout" href="/logout" onclick="return confirm('Voulez-vous vous déconnecter ?')">Déconnexion</a>
+</body>
+</html>

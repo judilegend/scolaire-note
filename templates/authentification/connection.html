@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/auth.css') }}"
+    />
+
+    <title>IMAJIN - Connexion</title>
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <div class="logo">
+          <a href="/">
+            <span class="logo-icon">🎓</span>
+          </a>
+        </div>
+        <div class="nav">
+          <a href="#" class="login-btn">se connecter</a>
+          <a href="/inscription">inscrire</a>
+        </div>
+      </header>
+
+      <div class="main-content">
+        <div class="left-section">
+          <div class="left-content">
+            <h1>Bienvenue<br />de retour!</h1>
+            <p>Connectez-vous pour accéder à votre compte</p>
+          </div>
+          <div class="arrow-icon">➜</div>
+        </div>
+
+        <div class="right-section">
+          <h2>Connexion</h2>
+
+          <div class="separator">Ou connectez-vous avec votre email</div>
+
+          <form method="POST">
+            <div class="form-group">
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                name="email"
+                placeholder="Email"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <input
+                type="password"
+                class="form-control"
+                id="mot_de_passe"
+                name="mot_de_passe"
+                placeholder="Mot de passe"
+                required
+              />
+            </div>
+
+            <div class="form-check">
+              <input type="checkbox" id="remember" class="form-check-input" />
+              <label for="remember" class="form-check-label">
+                Se souvenir de moi
+              </label>
+            </div>
+
+            <button type="submit" class="submit-btn">se connecter</button>
+
+            <div class="links">
+              <a href="/inscription">Créer un compte</a>
+              <a href="/mot_de_passe_oublie">Mot de passe oublié ?</a>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="footer-section logo">
+          <h4>MY-Notes</h4>
+
+          <p>
+            Plateforme de gestion scolaire<br />pour les étudiants,
+            enseignants<br />et administrateurs.
+          </p>
+        </div>
+
+        <div class="footer-section">
+          <h4 class="footer-title">NAVIGATION</h4>
+          <div class="footer-links">
+            <a href="#">Accueil</a>
+            <a href="#">À propos</a>
+            <a href="#">Services</a>
+            <a href="#">Contact</a>
+          </div>
+        </div>
+
+        <div class="footer-section">
+          <h4 class="footer-title">SERVICES</h4>
+          <div class="footer-links">
+            <a href="#">Gestion des notes</a>
+            <a href="#">Emploi du temps</a>
+            <a href="#">Ressources pédagogiques</a>
+            <a href="#">Messagerie</a>
+          </div>
+        </div>
+
+        <div class="footer-section">
+          <h4 class="footer-title">CONTACT</h4>
+          <div class="footer-links">
+            <a href="#">Support technique</a>
+            <a href="#">FAQ</a>
+            <a href="#">Signaler un problème</a>
+          </div>
+          <div class="social-media">
+            <a href="#" class="social-icon-footer">f</a>
+            <a href="#" class="social-icon-footer">in</a>
+            <a href="#" class="social-icon-footer">t</a>
+            <a href="#" class="social-icon-footer">ig</a>
+          </div>
+          <div class="language-selector"><i>🌐</i> Français - Fr</div>
+        </div>
+      </div>
+
+      <div class="copyright">© IMAJIN Plateforme Scolaire 2023</div>
+    </div>
+  </body>
+</html>

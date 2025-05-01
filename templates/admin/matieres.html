@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion des Matières</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background-color: #f4f7f9;
+            margin: 40px;
+            color: #2c3e50;
+        }
+
+        h2 {
+            color: #2e8a67;
+            margin-top: 30px;
+        }
+
+        form {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+            max-width: 600px;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 12px 20px;
+            background-color: #28a776;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #239765;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        thead {
+            background-color: #2e8a67;
+            color: white;
+        }
+
+        th, td {
+            padding: 14px 16px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        a {
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .edit {
+            color: #2980b9;
+        }
+
+        .delete {
+            color: #e74c3c;
+        }
+
+        .back-link {
+            margin-top: 30px;
+        }
+
+        .back-link a {
+            background-color: #2e8a67;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 6px;
+        }
+
+        .back-link a:hover {
+            background-color: #28a776;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>📄 Liste des matières enregistrées</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>📘 Nom</th>
+                <th>🎯 Coefficient</th>
+                <th>👨‍🏫 Professeur</th>
+                <th>🎓 Niveau</th>
+                <th>📚 Parcours</th>
+                <th>⚙️ Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for matiere in matieres %}
+            <tr>
+                <td>{{ matiere.nom }}</td>
+                <td>{{ matiere.coefficient }}</td>
+                <td>{{ matiere.professeur }}</td>
+                <td>{{ matiere.niveau }}</td>
+                <td>{{ matiere.parcours }}</td>
+                <td>
+                    <a class="edit" href="{{ url_for('admin.modifier_matiere_route', id_matiere=matiere._id) }}">✏️ Modifier</a> |
+                    <a class="delete" href="{{ url_for('admin.supprimer_matiere_route', id_matiere=matiere._id) }}" onclick="return confirm('🗑️ Supprimer cette matière ?')">🗑️ Supprimer</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>➕ Ajouter une nouvelle matière</h2>
+    <form method="POST">
+        <label>📘 Nom de la matière :</label>
+        <input type="text" name="nom" placeholder="Ex: Algorithmique" required>
+
+        <label>🎯 Coefficient :</label>
+        <input type="number" name="coefficient" step="1" min="1" placeholder="Ex: 3" required>
+
+        <label>👨‍🏫 Professeur :</label>
+        <select name="professeur" required>
+            <option value="">-- Choisir un professeur --</option>
+            {% for prof in professeurs %}
+                <option value="{{ prof.nom }}">{{ prof.nom }}</option>
+            {% endfor %}
+        </select>
+
+        <label>🎓 Niveau :</label>
+        <select name="niveau" required>
+            <option value="">-- Choisir le niveau --</option>
+            {% for niv in niveaux %}
+                <option value="{{ niv }}">{{ niv }}</option>
+            {% endfor %}
+        </select>
+
+        <label>📚 Parcours :</label>
+        <select name="parcours" required>
+            <option value="">-- Choisir le parcours --</option>
+            {% for p in parcours_list %}
+                <option value="{{ p }}">{{ p }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">✅ Ajouter la matière</button>
+    </form>
+
+
+    <div class="back-link">
+        <a href="{{ url_for('admin.dashboard') }}">⬅️ Retour au tableau de bord</a>
+    </div>
+
+</body>
+</html>

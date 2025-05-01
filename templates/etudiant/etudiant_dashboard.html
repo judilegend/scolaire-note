@@ -1,0 +1,403 @@
+{% extends "etudiant/layout.html" %} {% block title %}Tableau de bord - {{
+user.nom }}{% endblock %} {% block page_title %}Bienvenue, {{ user.nom }}{%
+endblock %} {% block content %}
+
+<!-- Introduction avec animation -->
+<div class="welcome-section">
+  <div class="welcome-icon">
+    <i class="fas fa-user-graduate"></i>
+  </div>
+  <div class="welcome-text">
+    <p class="description">
+      Voici votre espace personnel où vous pouvez consulter vos matières, notes
+      et vos camarades de classe.
+    </p>
+  </div>
+  <img
+    src="{{ url_for('static', filename='image/image-content.png') }}"
+    alt="Bienvenue"
+    class="image-content"
+  />
+</div>
+
+<!-- Statistiques rapides -->
+<div class="stats-container">
+  <div class="stat-card">
+    <div class="stat-icon">
+      <i class="fas fa-book"></i>
+    </div>
+    <div class="stat-info">
+      <h4>Parcours</h4>
+      <p>{{ user.parcours }}</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon">
+      <i class="fas fa-graduation-cap"></i>
+    </div>
+    <div class="stat-info">
+      <h4>Niveau</h4>
+      <p>{{ user.niveau }}</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon">
+      <i class="fas fa-id-card"></i>
+    </div>
+    <div class="stat-info">
+      <h4>Numéro</h4>
+      <p>{{ user.numero }}</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon">
+      <i class="fas fa-envelope"></i>
+    </div>
+    <div class="stat-info">
+      <h4>Contact</h4>
+      <p>{{ user.email }}</p>
+    </div>
+  </div>
+</div>
+
+<!-- Cartes principales -->
+<h3 class="section-title">
+  <i class="fas fa-th-large"></i> Services disponibles
+</h3>
+
+<div class="dashboard-grid">
+  <div class="dashboard-card">
+    <div class="card-header">
+      <div class="card-icon">
+        <i class="fas fa-book"></i>
+      </div>
+      <h3>Matières</h3>
+    </div>
+    <div class="card-body">
+      <p>Consultez les matières selon votre parcours et niveau.</p>
+      <ul class="feature-list">
+        <li><i class="fas fa-check-circle"></i> Liste des cours</li>
+        <li><i class="fas fa-check-circle"></i> Coefficients</li>
+        <li><i class="fas fa-check-circle"></i> Enseignants</li>
+      </ul>
+    </div>
+    <div class="card-footer">
+      <a href="{{ url_for('student.voir_matieres') }}" class="btn btn-primary">
+        Voir les matières
+      </a>
+    </div>
+  </div>
+
+  <div class="dashboard-card">
+    <div class="card-header">
+      <div class="card-icon">
+        <i class="fas fa-clipboard-check"></i>
+      </div>
+      <h3>Mes notes</h3>
+    </div>
+    <div class="card-body">
+      <p>Visualisez vos notes détaillées et votre moyenne.</p>
+      <ul class="feature-list">
+        <li><i class="fas fa-check-circle"></i> Notes par matière</li>
+        <li><i class="fas fa-check-circle"></i> Moyenne générale</li>
+        <li><i class="fas fa-check-circle"></i> Export PDF</li>
+      </ul>
+    </div>
+    <div class="card-footer">
+      <a href="{{ url_for('student.mes_notes') }}" class="btn btn-primary">
+        Consulter mes notes
+      </a>
+    </div>
+  </div>
+
+  <div class="dashboard-card">
+    <div class="card-header">
+      <div class="card-icon">
+        <i class="fas fa-users"></i>
+      </div>
+      <h3>Camarades</h3>
+    </div>
+    <div class="card-body">
+      <p>Découvrez vos camarades de parcours.</p>
+      <ul class="feature-list">
+        <li><i class="fas fa-check-circle"></i> Liste des étudiants</li>
+        <li><i class="fas fa-check-circle"></i> Coordonnées</li>
+        <li><i class="fas fa-check-circle"></i> Même parcours</li>
+      </ul>
+    </div>
+    <div class="card-footer">
+      <a
+        href="{{ url_for('student.liste_etudiants') }}"
+        class="btn btn-primary"
+      >
+        Liste des étudiants
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Ajout de styles spécifiques à cette page -->
+<style>
+  /* Welcome section */
+  .welcome-section {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: var(--glass-border);
+    border-radius: var(--border-radius);
+    box-shadow: var(--glass-shadow);
+    animation: fadeIn 0.6s ease-out;
+  }
+
+  .welcome-icon {
+    background-color: rgba(76, 175, 80, 0.1);
+    color: var(--primary-color);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1.5rem;
+    font-size: 1.8rem;
+  }
+  .image-content {
+    width: 500px;
+    height: 200px;
+    /* border-radius: 50%; */
+    object-fit: cover;
+    margin-left: 100px;
+  }
+  .welcome-text {
+    flex: 1;
+  }
+
+  .welcome-text .description {
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.6;
+  }
+
+  /* Stats container */
+  .stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .stat-card {
+    display: flex;
+    align-items: center;
+    padding: 1.2rem;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: var(--glass-border);
+    border-radius: var(--border-radius);
+    box-shadow: var(--glass-shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  .stat-icon {
+    background-color: rgba(76, 175, 80, 0.1);
+    color: var(--secondary-color);
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    font-size: 1.2rem;
+  }
+
+  .stat-info h4 {
+    margin: 0 0 0.3rem 0;
+    font-size: 0.9rem;
+    color: var(--text-light);
+  }
+
+  .stat-info p {
+    margin: 0;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-color);
+  }
+
+  /* Section title */
+  .section-title {
+    margin: 2rem 0 1.5rem 0;
+    font-size: 1.4rem;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* Dashboard cards */
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .dashboard-card {
+    display: flex;
+    flex-direction: column;
+
+    height: 600px;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: var(--glass-border);
+    border-radius: var(--border-radius);
+    box-shadow: var(--glass-shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+  }
+
+  .dashboard-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  .card-header {
+    padding: 1.2rem;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .card-icon {
+    /* background-color: rgba(76, 175, 80, 0.1); */
+    color: var(--secondary-color);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    font-size: 1.2rem;
+  }
+  .card-icon i {
+    /* color: var(--secondary-color); */
+    /* width: 100%; */
+    padding: 0 30px;
+    font-size: 1.9rem;
+  }
+  .card-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--primary-color);
+  }
+
+  .card-body {
+    /* padding: 1.5rem; */
+    flex: 1;
+  }
+
+  .card-body p {
+    margin-top: 0;
+    font-size: 1rem;
+    color: var(--text-light);
+  }
+
+  .feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 0 0;
+  }
+
+  .feature-list li {
+    margin-bottom: 0.2rem;
+    display: flex;
+    align-items: center;
+    font-size: small;
+  }
+
+  .feature-list li i {
+    color: var(--primary-color);
+    margin-right: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .card-footer {
+    /* padding: 1.5rem; */
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+    font-size: small;
+  }
+
+  .card-footer .btn {
+    width: 70%;
+    height: 60px;
+  }
+  .card-footer .btn i {
+    width: 20px;
+  }
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .welcome-section {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .welcome-icon {
+      margin-right: 0;
+      margin-bottom: 1rem;
+    }
+
+    .stats-container {
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+
+    .stat-card {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .stat-icon {
+      margin-right: 0;
+      margin-bottom: 0.8rem;
+    }
+  }
+</style>
+
+<!-- Ajout de script spécifique à cette page -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Animation pour les stat-cards
+    const statCards = document.querySelectorAll(".stat-card");
+    statCards.forEach((card, index) => {
+      card.style.opacity = "0";
+      card.style.animation = `fadeIn 0.5s ease-out ${
+        0.1 + index * 0.1
+      }s forwards`;
+    });
+
+    // Animation pour les dashboard-cards
+    const dashboardCards = document.querySelectorAll(".dashboard-card");
+    dashboardCards.forEach((card, index) => {
+      card.style.opacity = "0";
+      card.style.animation = `fadeIn 0.5s ease-out ${
+        0.5 + index * 0.1
+      }s forwards`;
+    });
+  });
+</script>
+{% endblock %}

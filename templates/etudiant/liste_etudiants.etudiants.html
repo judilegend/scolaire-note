@@ -1,0 +1,34 @@
+{% extends "etudiant/layout.html" %} {% block title %}Étudiants - {{
+user.parcours }} {{ user.niveau }}{% endblock %} {% block page_title %}Liste des
+étudiants - {{ user.parcours }} {{ user.niveau }}{% endblock %} {% block content
+%}
+<div class="card">
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th><i class="fas fa-user"></i> Nom</th>
+          <th><i class="fas fa-id-card"></i> Numéro</th>
+          <th><i class="fas fa-envelope"></i> Email</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for etu in etudiants %}
+        <tr>
+          <td>{{ etu.nom }}</td>
+          <td>{{ etu.numero }}</td>
+          <td>{{ etu.email }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="3" class="text-center">
+            <i class="fas fa-info-circle"></i> Aucun étudiant trouvé pour ce
+            parcours/niveau.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

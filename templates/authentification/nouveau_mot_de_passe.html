@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réinitialiser le mot de passe</title>
+    <style>
+        body {
+            background-color: #f0f4f8;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 60px;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            width: 380px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input {
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #2e8a67;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #28a776;
+        }
+
+        .error-message {
+            font-size: 14px;
+            color: #e74c3c;
+            margin-top: -10px;
+            margin-bottom: 10px;
+        }
+
+        .comment {
+            font-size: 13px;
+            color: #666;
+            margin-top: -10px;
+            margin-bottom: 15px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h2>Réinitialiser votre mot de passe</h2>
+    <form id="reset-password-form" method="POST">
+        <label for="mot_de_passe">Nouveau mot de passe :</label>
+        <input type="password" name="mot_de_passe" id="mot_de_passe" placeholder="Nouveau mot de passe" required>
+
+        <label for="confirm_mot_de_passe">Confirmer le mot de passe :</label>
+        <input type="password" name="confirm_mot_de_passe" id="confirm_mot_de_passe" placeholder="Confirmez votre mot de passe" required>
+
+        <div class="error-message" id="error-message" style="display: none;">
+            Les mots de passe ne correspondent pas. Veuillez réessayer.
+        </div>
+
+        <button type="submit">Changer le mot de passe</button>
+        <br>
+        <a href="{{url_for('auth.connexion')}}">Annuler</a>
+    </form>
+
+    <script>
+        // Validation du mot de passe avant la soumission du formulaire
+        document.getElementById('reset-password-form').addEventListener('submit', function(e) {
+            var mot_de_passe = document.getElementById('mot_de_passe').value;
+            var confirm_mot_de_passe = document.getElementById('confirm_mot_de_passe').value;
+
+            // Vérification si les mots de passe correspondent
+            if (mot_de_passe !== confirm_mot_de_passe) {
+                // Afficher le message d'erreur
+                document.getElementById('error-message').style.display = 'block';
+                e.preventDefault(); // Empêche l'envoi du formulaire
+            }
+        });
+    </script>
+
+</body>
+</html>

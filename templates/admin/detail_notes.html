@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détails des notes</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            padding: 40px;
+            color: #333;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        thead {
+            background-color: #2e8a67;
+            color: #fff;
+        }
+
+        th, td {
+            padding: 14px 16px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tbody tr:hover {
+            background-color: #f0f0f0;
+        }
+
+        a {
+            color: #2e8a67;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .actions {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .actions a {
+            display: inline-block;
+            margin: 10px;
+            padding: 12px 20px;
+            background-color: #2e8a67;
+            color: #fff;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: background 0.3s ease;
+        }
+
+        .actions a:hover {
+            background-color: #28a776;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>🧑‍🎓 Notes détaillées de {{ etudiant.nom }} ({{ etudiant["numero"] }})</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Matière</th>
+                <th>Coefficient</th>
+                <th>Note</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in details %}
+            <tr>
+                <td>{{ item.matiere }}</td>
+                <td>{{ item.coefficient }}</td>
+                <td>{{ item.note }}</td>
+                <td>
+                    {% if item.id_note %}
+                        <a href="{{ url_for('admin.modifier_note', note_id=item.id_note) }}">✏️ Modifier</a>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="actions">
+        <a href="{{ url_for('admin.voir_moyennes') }}">⬅️ Retour aux moyennes</a>
+        <a href="{{ url_for('admin.dashboard') }}">🏠 Tableau de bord</a>
+    </div>
+
+</body>
+</html>

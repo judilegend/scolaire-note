@@ -1,0 +1,51 @@
+{% extends "etudiant/layout.html" %} {% block title %}Réclamation - {{
+matiere.nom }}{% endblock %} {% block page_title %}Réclamation pour {{
+matiere.nom }}{% endblock %} {% block content %}
+<div class="card">
+  <div class="info-box">
+    <h3><i class="fas fa-info-circle"></i> Informations sur la matière</h3>
+    <p><strong>Matière :</strong> {{ matiere.nom }}</p>
+    <p><strong>Professeur :</strong> {{ matiere.professeur }}</p>
+  </div>
+
+  <form
+    action="{{ url_for('student.reclamation', matiere_id=matiere_id) }}"
+    method="POST"
+    class="mt-4"
+  >
+    <div class="form-group">
+      <label for="commentaire">
+        <i class="fas fa-comment"></i> Votre réclamation :
+      </label>
+      <textarea
+        name="commentaire"
+        id="commentaire"
+        rows="6"
+        placeholder="Expliquez clairement votre réclamation concernant la note, l'évaluation, etc."
+        required
+        style="font-size: 0.9rem"
+      ></textarea>
+    </div>
+
+    <div class="text-center mt-4">
+      <button
+        type="submit"
+        class="btn btn-primary"
+        onclick="return confirm('Voulez-vous confirmer cette réclamation ?')"
+      >
+        <i class="fas fa-paper-plane" style="margin-right: 5px"></i> Soumettre
+        la réclamation
+      </button>
+
+      <a
+        href="{{ url_for('student.mes_notes') }}"
+        class="btn btn-danger"
+        style="margin-left: 10px; font-size: small"
+      >
+        <i class="fas fa-times" style="margin-right: 5px"></i>
+        Annuler
+      </a>
+    </div>
+  </form>
+</div>
+{% endblock %}

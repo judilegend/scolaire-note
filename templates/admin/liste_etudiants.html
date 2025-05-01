@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Liste des Étudiants</title>
+<style>
+/* Style de base pour le corps de la page */
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to right, #e0f7fa, #ffffff);
+  margin: 0;
+  padding: 30px;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Conteneur principal pour centrer le contenu */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+/* Style du titre principal */
+h1 {
+  color: #2c3e50;
+  margin-top: 0;
+  margin-bottom: 25px;
+  font-size: 28px;
+  text-align: center;
+  border-bottom: 2px solid #e0f7fa;
+  padding-bottom: 15px;
+}
+
+/* Style du formulaire de recherche et filtrage */
+.search-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 25px;
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 200px;
+}
+
+input[type="text"], select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 16px;
+  color: #333;
+  background-color: white;
+  font-family: inherit;
+}
+
+input[type="text"]:focus, select:focus {
+  outline: none;
+  border-color: #2e8a67;
+  box-shadow: 0 0 0 2px rgba(46, 138, 103, 0.2);
+}
+
+/* Style des boutons */
+button {
+  background-color: #2e8a67;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #28a776;
+}
+
+/* Liens et actions */
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.action-link {
+  color: #2e8a67;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.action-link:hover {
+  color: #28a776;
+  text-decoration: underline;
+}
+
+.student-count {
+  background-color: #f0f0f0;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+/* Style du tableau des étudiants */
+.students-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.students-table thead {
+  background-color: #2e8a67;
+  color: white;
+}
+
+.students-table th, .students-table td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.students-table tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+.profile-link {
+  color: #2e8a67;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.profile-link:hover {
+  text-decoration: underline;
+}
+
+/* Lien de retour */
+.back-link {
+  display: inline-block;
+  margin-top: 20px;
+  color: #2c3e50;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.back-link:hover {
+  color: #2e8a67;
+}
+
+/* Style pour les appareils mobiles */
+@media (max-width: 768px) {
+  .container {
+    padding: 20px;
+  }
+  
+  .search-form {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .students-table {
+    display: block;
+    overflow-x: auto;
+  }
+  
+  .students-table th, .students-table td {
+    padding: 10px;
+  }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Liste des Étudiants</h1>
+  
+  <!-- Formulaire de recherche et filtrage -->
+  <form method="POST" class="search-form">
+    <div class="search-input">
+      <input type="text" name="recherche" placeholder="Rechercher par nom ou numéro" value="{{ recherche }}">
+    </div>
+    <div class="search-input">
+      <select name="niveau">
+        <option value="">-- Niveau --</option>
+        {% for niv in niveaux %}
+        <option value="{{ niv }}" {% if selected_niveau == niv %}selected{% endif %}>{{ niv }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="search-input">
+      <select name="parcours">
+        <option value="">-- Parcours --</option>
+        {% for p in parcours_list %}
+        <option value="{{ p }}" {% if selected_parcours == p %}selected{% endif %}>{{ p }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="submit">Filtrer</button>
+  </form>
+  
+  <!-- Actions et informations -->
+  <div class="actions">
+    <div>
+      <a href="{{ url_for('admin.voir_moyennes') }}" class="action-link">📊 Liste des étudiants avec moyenne</a>
+      <span class="student-count">📚 Nombre d'étudiants : {{ nb_etudiants }}</span>
+    </div>
+    <a href="{{ url_for('admin.liste_etudiants') }}" class="action-link">🔄 Restaurer la liste complète</a>
+  </div>
+  
+  <!-- Tableau des étudiants -->
+  <table class="students-table">
+    <thead>
+      <tr>
+        <th>Numéro</th>
+        <th>Nom</th>
+        <th>Niveau</th>
+        <th>Parcours</th>
+        <th>Email</th>
+        <th>Profil</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for etudiant in etudiants %}
+      <tr>
+        <td>{{ etudiant.numero }}</td>
+        <td>{{ etudiant.nom }}</td>
+        <td>{{ etudiant.niveau }}</td>
+        <td>{{ etudiant.parcours }}</td>
+        <td>{{ etudiant.email }}</td>
+        <td><a href="#" class="profile-link">Voir profil</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  
+  <!-- Lien de retour au tableau de bord -->
+  <a href="{{ url_for('admin.dashboard') }}" class="back-link">⬅️ Retour au tableau de bord</a>
+</div>
+</body>
+</html>

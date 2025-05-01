@@ -1,0 +1,399 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  /* background: linear-gradient(145deg, #e0f7fa, #ffffff); */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.container {
+  width: 100%;
+  height: 100%;
+  max-width: 1400px;
+  background-color: #fff;
+  /* box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); */
+  /* border-radius: 8px; */
+  overflow: hidden;
+
+  position: relative;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  border-bottom: 1px solid #eee;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+.logo a {
+  text-decoration: none;
+}
+.logo .logo-icon {
+  font-size: 30px;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  font-size: small;
+}
+
+.login-btn {
+  background-color: #e0f7fa;
+  color: white;
+  padding: 8px 20px;
+  font-size: small;
+  border-radius: 20px;
+  transition: background-color 0.3s;
+}
+
+.login-btn:hover {
+  background-color: #bbd8dc;
+}
+
+.settings-icon {
+  color: #777;
+  margin-left: 20px;
+  cursor: pointer;
+}
+
+.main-content {
+  /* min-height: 100vh; */
+  display: flex;
+  /* align-items: center;
+        justify-content: center; */
+  padding: 0;
+}
+
+.left-section {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(145deg, #28a776, #2c3e50);
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: white;
+  min-height: 580px;
+}
+
+.left-content {
+  position: relative;
+  z-index: 1;
+}
+
+.left-content h1 {
+  font-size: 3.5rem;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.left-content p {
+  font-size: 1.3rem;
+  margin-bottom: 50px;
+}
+
+.arrow-icon {
+  font-size: 6rem;
+  opacity: 0.5;
+  transform: rotate(30deg);
+  position: absolute;
+  bottom: 40px;
+  right: 40px;
+}
+
+.right-section {
+  flex: 1;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.blob-background {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  top: 30;
+  left: 10px;
+  overflow-x: visible;
+  z-index: 10;
+  opacity: 0.7;
+}
+/*blob image*/
+.blob-background img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* position: absolute; */
+  top: 0;
+}
+
+.right-section h2 {
+  font-size: 1.8rem;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+.social-login {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.social-btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 4px;
+  color: white;
+  text-align: center;
+  cursor: pointer;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: opacity 0.3s;
+}
+
+.social-btn:hover {
+  opacity: 0.9;
+}
+
+.facebook {
+  background-color: #3b5998;
+}
+
+.twitter {
+  background-color: #1da1f2;
+}
+
+.google {
+  background-color: #ea4335;
+}
+
+.social-icon {
+  font-size: 18px;
+}
+
+.separator {
+  display: flex;
+  align-items: center;
+  color: #aaa;
+  margin: 25px 0;
+}
+
+.separator:before,
+.separator:after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: #eee;
+  margin: 0 15px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.form-check {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 25px;
+  gap: 10px;
+}
+
+.form-check-input {
+  margin-top: 4px;
+}
+
+.form-check-label {
+  font-size: 14px;
+  color: #666;
+}
+
+.form-check-label a {
+  color: #28a776;
+  text-decoration: none;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 14px;
+  background-color: #2e8a67;
+  border: none;
+  border-radius: 30px;
+  color: white;
+  font-size: small;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.submit-btn:hover {
+  background-color: #28a776;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 30px 40px;
+  border-top: 1px solid #eee;
+  color: #666;
+  font-size: 14px;
+}
+
+.footer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer-title {
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footer-links a {
+  color: #666;
+  text-decoration: none;
+}
+
+.footer-links a:hover {
+  color: #28a776;
+}
+
+.social-media {
+  display: flex;
+  gap: 12px;
+}
+
+.social-icon-footer {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #f1f1f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.social-icon-footer:hover {
+  background-color: #e5e5e5;
+}
+
+.copyright {
+  padding: 15px 40px;
+  text-align: center;
+  color: #999;
+  font-size: 14px;
+}
+
+.language-selector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #666;
+  margin-top: 20px;
+}
+
+.language-selector i {
+  margin-right: 8px;
+}
+
+.links {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.links a {
+  text-decoration: none;
+  color: #28a776;
+  font-size: 14px;
+}
+
+.links a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .main-content {
+    flex-direction: column;
+  }
+
+  .left-section {
+    min-height: 300px;
+  }
+
+  .footer {
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .footer-section {
+    flex: 1 0 45%;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 15px 20px;
+  }
+
+  .left-content h1 {
+    font-size: 2.5rem;
+  }
+
+  .social-login {
+    flex-direction: column;
+  }
+
+  .footer-section {
+    flex: 1 0 100%;
+  }
+}

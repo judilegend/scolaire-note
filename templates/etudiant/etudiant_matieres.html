@@ -1,0 +1,33 @@
+{% extends "etudiant/layout.html" %} {% block title %}Matières - {{ user.nom
+}}{% endblock %} {% block page_title %}Matières pour {{ user.parcours }} - {{
+user.niveau }}{% endblock %} {% block content %}
+<div class="card">
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th><i class="fas fa-book"></i> Matière</th>
+          <th><i class="fas fa-balance-scale"></i> Coefficient</th>
+          <th><i class="fas fa-chalkboard-teacher"></i> Professeur</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for matiere in matieres %}
+        <tr>
+          <td>{{ matiere.nom }}</td>
+          <td>{{ matiere.coefficient }}</td>
+          <td>{{ matiere.professeur }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="3" class="text-center">
+            <i class="fas fa-info-circle"></i> Aucune matière trouvée pour votre
+            niveau/parcours.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

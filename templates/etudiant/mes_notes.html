@@ -1,0 +1,88 @@
+{% extends "etudiant/layout.html" %} {% block title %}Mes Notes - {{ user.nom
+}}{% endblock %} {% block page_title %}Mes Notes{% endblock %} {% block content
+%}
+<div class="card">
+  <!-- <div class="info-box">
+    <h3><i class="fas fa-user-graduate"></i> Informations</h3>
+    <p><strong>Nom :</strong> {{ user.nom }} {{ user.prenom }}</p>
+    <p><strong>Parcours :</strong> {{ user.parcours }}</p>
+    <p><strong>Niveau :</strong> {{ user.niveau }}</p>
+
+  </div> -->
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th><i class="fas fa-book"></i> Matière</th>
+          <th><i class="fas fa-star"></i> Note</th>
+          <th><i class="fas fa-balance-scale"></i> Coefficient</th>
+          <th><i class="fas fa-exclamation-circle"></i> Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for matiere in matieres %}
+        <tr>
+          <td>{{ matiere.nom }}</td>
+          <td>
+            {% if notes_dict[matiere._id] %}
+            <span
+              style="
+                font-weight: bold;
+                background: rgba(76, 175, 80, 0.1);
+                padding: 5px 10px;
+                border-radius: 20px;
+                display: inline-block;
+              "
+            >
+              {{ notes_dict[matiere._id] }}
+            </span>
+            {% else %}
+            <em style="color: var(--text-light)">Non noté</em>
+            {% endif %}
+          </td>
+          <td>{{ matiere.coefficient }}</td>
+          <td>
+            <a
+              href="{{ url_for('student.reclamation', matiere_id=matiere._id) }}"
+              class="btn btn-primary btn-sm"
+            >
+              <i class="fas fa-comment-dots" style="margin-right: 5px"></i>
+              Réclamer
+            </a>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="4" class="text-center">
+            <i class="fas fa-info-circle"></i> Aucune matière trouvée pour votre
+            niveau/parcours.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="mt-4" style="font-size: 0.95rem; color: var(--secondary-color)">
+    <strong><i class="fas fa-calculator"></i> Moyenne générale :</strong>
+    <span
+      style="
+        background: rgba(76, 175, 80, 0.1);
+        padding: 5px 15px;
+        border-radius: 20px;
+        display: inline-block;
+      "
+    >
+      {{ moyenne }} / 20
+    </span>
+  </p>
+  <div class="text-center mt-4">
+    <a
+      href="{{ url_for('student.generer_pdf', etudiant_id=user_id) }}"
+      class="btn btn-primary"
+    >
+      <i class="fas fa-file-pdf"></i> Générer PDF
+    </a>
+  </div>
+</div>
+{% endblock %}

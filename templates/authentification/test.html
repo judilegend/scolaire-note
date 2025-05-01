@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMAJIN - Register</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            background-color: #fff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 40px;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .register-btn {
+            background-color: #a17bfc;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .register-btn:hover {
+            background-color: #8a5cf7;
+        }
+
+        .settings-icon {
+            color: #777;
+            margin-left: 20px;
+            cursor: pointer;
+        }
+
+        .main-content {
+            display: flex;
+            padding: 0;
+        }
+
+        .left-section {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(145deg, #6e24fc, #ae5fff);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: white;
+            min-height: 580px;
+        }
+
+        .blob-background {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            opacity: 0.7;
+        }
+
+        .left-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .left-content h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .left-content p {
+            font-size: 1.3rem;
+            margin-bottom: 50px;
+        }
+
+        .arrow-icon {
+            font-size: 6rem;
+            opacity: 0.5;
+            transform: rotate(30deg);
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+        }
+
+        .right-section {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .right-section h2 {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .social-login {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .social-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 4px;
+            color: white;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: opacity 0.3s;
+        }
+
+        .social-btn:hover {
+            opacity: 0.9;
+        }
+
+        .facebook {
+            background-color: #3b5998;
+        }
+
+        .twitter {
+            background-color: #1da1f2;
+        }
+
+        .google {
+            background-color: #ea4335;
+        }
+
+        .social-icon {
+            font-size: 18px;
+        }
+
+        .separator {
+            display: flex;
+            align-items: center;
+            color: #aaa;
+            margin: 25px 0;
+        }
+
+        .separator:before,
+        .separator:after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background-color: #eee;
+            margin: 0 15px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .form-check {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 25px;
+            gap: 10px;
+        }
+
+        .form-check-input {
+            margin-top: 4px;
+        }
+
+        .form-check-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .form-check-label a {
+            color: #a17bfc;
+            text-decoration: none;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: #6e24fc;
+            border: none;
+            border-radius: 30px;
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .submit-btn:hover {
+            background-color: #5c14e9;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            padding: 30px 40px;
+            border-top: 1px solid #eee;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .footer-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .footer-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .footer-links a {
+            color: #666;
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            color: #a17bfc;
+        }
+
+        .social-media {
+            display: flex;
+            gap: 12px;
+        }
+
+        .social-icon-footer {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #f1f1f1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .social-icon-footer:hover {
+            background-color: #e5e5e5;
+        }
+
+        .copyright {
+            padding: 15px 40px;
+            text-align: center;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .language-selector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #666;
+            margin-top: 20px;
+        }
+
+        .language-selector i {
+            margin-right: 8px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .left-section {
+                min-height: 300px;
+            }
+            
+            .footer {
+                flex-wrap: wrap;
+                gap: 20px;
+            }
+            
+            .footer-section {
+                flex: 1 0 45%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 15px 20px;
+            }
+            
+            .left-content h1 {
+                font-size: 2.5rem;
+            }
+            
+            .social-login {
+                flex-direction: column;
+            }
+            
+            .footer-section {
+                flex: 1 0 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjUwIiB2aWV3Qm94PSIwIDAgMTUwIDUwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJsb2dvR3JhZGllbnQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjNmUyNGZjIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI2FlNWZmZiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPGNpcmNsZSBjeD0iMjUiIGN5PSIyNSIgcj0iMjAiIGZpbGw9InVybCgjbG9nb0dyYWRpZW50KSIvPgogIDx0ZXh0IHg9IjU1IiB5PSIzMiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iYm9sZCIgZm9udC1zaXplPSIyMiIgZmlsbD0iIzMzMyI+SU1BSklOPC90ZXh0Pgo8L3N2Zz4=" alt="IMAJIN Logo">
+            </div>
+            <div class="nav">
+                <a href="#">LOGIN</a>
+                <a href="#" class="register-btn">REGISTER</a>
+                <span class="settings-icon">⚙️</span>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="left-section">
+                <div class="blob-background">
+                    <!-- Background effect achieved with CSS gradients -->
+                </div>
+                <div class="left-content">
+                    <h1>Nice to meet<br>you :)</h1>
+                    <p>Just register to join with us</p>
+                </div>
+                <div class="arrow-icon">➜</div>
+            </div>
+
+            <div class="right-section">
+                <h2>Register</h2>
+                <div class="social-login">
+                    <div class="social-btn facebook">
+                        <span class="social-icon">f</span>
+                        FACEBOOK
+                    </div>
+                    <div class="social-btn twitter">
+                        <span class="social-icon">t</span>
+                        TWITTER
+                    </div>
+                    <div class="social-btn google">
+                        <span class="social-icon">G</span>
+                        GOOGLE
+                    </div>
+                </div>
+
+                <div class="separator">Or login with email</div>
+
+                <form>
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Name">
+                    </div>
+                    <div class="form-group">
+                        <input type="email" class="form-control" placeholder="Email">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control" placeholder="Password">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control" placeholder="Repeat Password">
+                    </div>
+
+                    <div class="form-check">
+                        <input type="checkbox" id="terms" class="form-check-input" checked>
+                        <label for="terms" class="form-check-label">
+                            I have read and accept the Terms of Service & Privacy Policy
+                        </label>
+                    </div>
+
+                    <button type="submit" class="submit-btn">CONTINUE</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-section logo">
+                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjUwIiB2aWV3Qm94PSIwIDAgMTUwIDUwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJsb2dvR3JhZGllbnQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjNmUyNGZjIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI2FlNWZmZiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPGNpcmNsZSBjeD0iMjUiIGN5PSIyNSIgcj0iMjAiIGZpbGw9InVybCgjbG9nb0dyYWRpZW50KSIvPgogIDx0ZXh0IHg9IjU1IiB5PSIzMiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iYm9sZCIgZm9udC1zaXplPSIyMiIgZmlsbD0iIzMzMyI+SU1BSklOPC90ZXh0Pgo8L3N2Zz4=" alt="IMAJIN Logo" style="height: 30px; margin-bottom: 10px;">
+                <p>Nam posuere accumsan porta.<br>Integer id orci sed ante tincidunt<br>tincidunt sit amet sed libero.</p>
+            </div>
+
+            <div class="footer-section">
+                <h4 class="footer-title">COMPANY</h4>
+                <div class="footer-links">
+                    <a href="#">Donec dignissim</a>
+                    <a href="#">Curabitur egestas</a>
+                    <a href="#">Nam posuere</a>
+                    <a href="#">Aenean felis</a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h4 class="footer-title">SERVICES</h4>
+                <div class="footer-links">
+                    <a href="#">Cras convallis</a>
+                    <a href="#">Vestibulum faucibus</a>
+                    <a href="#">Quisque lacinia purus</a>
+                    <a href="#">Aliquam nec ex</a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h4 class="footer-title">RESOURCES</h4>
+                <div class="footer-links">
+                    <a href="#">Suspendisse porttitor</a>
+                    <a href="#">Nam posuere</a>
+                    <a href="#">Curabitur egestas</a>
+                </div>
+                <div class="social-media">
+                    <a href="#" class="social-icon-footer">f</a>
+                    <a href="#" class="social-icon-footer">in</a>
+                    <a href="#" class="social-icon-footer">t</a>
+                    <a href="#" class="social-icon-footer">ig</a>
+                </div>
+                <div class="language-selector">
+                    <i>🌐</i> English - En
+                </div>
+            </div>
+        </div>
+
+        <div class="copyright">
+            © Imajin Theme 2021
+        </div>
+    </div>
+</body>
+</html>

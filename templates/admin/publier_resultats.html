@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Publier les Résultats</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f5;
+            padding: 40px;
+            color: #333;
+        }
+
+        h2, h3 {
+            color: #2e8a67;
+            text-align: center;
+        }
+
+        form {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        button {
+            background-color: #2e8a67;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #28a776;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px auto;
+        }
+
+        th, td {
+            border: 1px solid #999;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #e6f4f1;
+        }
+
+        .message {
+            text-align: center;
+            color: green;
+            margin-top: 20px;
+        }
+
+        .no-result {
+            color: red;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .back-link a {
+            color: #2e8a67;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>📢 Publication des Résultats de la Session</h2>
+
+    <form method="POST" action="{{ url_for('admin.publier_resultats') }}">
+        <label for="parcours">Parcours :</label>
+        <select name="parcours" required>
+            <option value="">-- Choisir --</option>
+            <option value="GID" {% if parcours_selectionne == "GID" %}selected{% endif %}>GID</option>
+            <option value="OCC" {% if parcours_selectionne == "OCC" %}selected{% endif %}>OCC</option>
+            <option value="IG" {% if parcours_selectionne == "IG" %}selected{% endif %}>IG</option>
+        </select>
+
+        <label for="niveau">Niveau :</label>
+        <select name="niveau" required>
+            <option value="">-- Choisir --</option>
+            <option value="M1" {% if niveau_selectionne == "M1" %}selected{% endif %}>M1</option>
+            <option value="M2" {% if niveau_selectionne == "M2" %}selected{% endif %}>M2</option>
+            <option value="L3" {% if niveau_selectionne == "L3" %}selected{% endif %}>L3</option>
+        </select>
+
+        <button type="submit">🔍 Voir les étudiants</button>
+    </form>
+
+    {% if etudiants %}
+        <hr>
+        <h3>📋 Étudiants pour {{ parcours_selectionne }} / {{ niveau_selectionne }}</h3>
+        <form method="POST" action="{{ url_for('admin.publier_resultats') }}">
+            <input type="hidden" name="parcours" value="{{ parcours_selectionne }}">
+            <input type="hidden" name="niveau" value="{{ niveau_selectionne }}">
+            <input type="hidden" name="confirmer" value="1">
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Numéro</th>
+                        <th>Nom</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for etudiant in etudiants %}
+                    <tr>
+                        <td>{{ etudiant.numero }}</td>
+                        <td>{{ etudiant.nom }}</td>
+                        <td>{{ etudiant.email }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <button type="submit" onclick="return confirm('Confirmer la publication des résultats ?')">
+                ✅ Publier les résultats et envoyer les emails
+            </button>
+        </form>
+    {% elif parcours_selectionne and niveau_selectionne %}
+        <p class="no-result">❌ Aucun étudiant trouvé pour {{ parcours_selectionne }} / {{ niveau_selectionne }}.</p>
+    {% endif %}
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="message">
+                {% for category, message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="back-link">
+        <a href="{{ url_for('admin.dashboard') }}">⬅️ Retour au tableau de bord</a>
+    </div>
+
+</body>
+</html>

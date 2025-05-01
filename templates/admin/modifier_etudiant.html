@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Modifier un Étudiant</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f5;
+            padding: 40px;
+            color: #333;
+        }
+
+        h2 {
+            color: #2e8a67;
+            text-align: center;
+        }
+
+        form {
+            max-width: 500px;
+            margin: auto;
+            background-color: #fff;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 8px 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        button {
+            margin-top: 20px;
+            background-color: #2e8a67;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #28a776;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .back-link a {
+            text-decoration: none;
+            color: #2e8a67;
+            font-weight: bold;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Modifier les informations de {{ etudiant.nom }}</h2>
+
+    <form method="POST">
+        <label>Numéro de carte :</label>
+        <input type="text" name="numero" value="{{ etudiant.numero }}" required>
+
+        <label>Nom :</label>
+        <input type="text" name="nom" value="{{ etudiant.nom }}" required>
+
+        <label>Parcours :</label>
+        <input type="text" name="parcours" value="{{ etudiant.parcours }}" required>
+
+        <label>Niveau :</label>
+        <input type="text" name="niveau" value="{{ etudiant.niveau }}" required>
+
+        <button type="submit">💾 Enregistrer</button>
+    </form>
+
+    <div class="back-link">
+        <a href="{{ url_for('admin.liste_etudiants') }}">⬅ Retour à la liste</a>
+    </div>
+
+</body>
+</html>

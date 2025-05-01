@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard Enseignant</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #e0f7fa, #ffffff);
+      margin: 0;
+      padding: 30px;
+      color: #333;
+    }
+
+    h2 {
+      color: #2c3e50;
+      font-size: 2.5em;
+      margin-bottom: 20px;
+      text-align: center;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      background-color: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+
+    h3 {
+      color: #2e8a67;
+      text-align: center;
+      font-size: 1.8em;
+      margin-bottom: 20px;
+    }
+
+    .dashboard {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+
+    .dashboard div {
+      background-color: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      width: 250px;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .dashboard div:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+    }
+
+    .dashboard div a {
+      display: block;
+      color: #2e8a67;
+      font-size: 18px;
+      font-weight: 600;
+      text-decoration: none;
+      margin: 10px 0;
+    }
+
+    .dashboard div a:hover {
+      color: #28a776;
+    }
+
+    .reclamation-list {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .reclamation-item {
+      background-color: #f9f9f9;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+      transition: transform 0.2s ease;
+    }
+
+    .reclamation-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .reclamation-item strong {
+      color: #2e8a67;
+    }
+
+    .btn {
+      background-color: #e74c3c;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      text-decoration: none;
+      text-align: center;
+      display: inline-block;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #c0392b;
+    }
+
+    .logout {
+      background-color: #e74c3c;
+      color: white;
+      padding: 15px 25px;
+      border-radius: 8px;
+      font-size: 18px;
+      max-width: 250px;
+      margin: 30px auto 0;
+      text-align: center;
+      display: block;
+      text-decoration: none;
+      font-weight: 500;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transition: background-color 0.3s ease;
+    }
+
+    .logout:hover {
+      background-color: #c0392b;
+    }
+
+    .logout:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    @media (max-width: 768px) {
+      .dashboard div {
+        width: 100%;
+        max-width: 300px;
+      }
+
+      body {
+        padding: 15px;
+      }
+
+      h2 {
+        font-size: 2em;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h2>👨‍🏫 Bienvenue, {{ user.nom }}</h2>
+  <p style="text-align: center;">📧 {{ user.email }}</p>
+
+  <div class="container">
+    <h3>📚 Vos Matières</h3>
+    <div class="dashboard">
+      {% for matiere in matieres %}
+        <div>
+          <span style="font-weight: bold;">{{ matiere.nom }} ({{ matiere.parcours }})</span>
+          <a href="{{ url_for('enseignant.gerer_notes', matiere_id=matiere._id) }}">✍️ Gérer les notes</a>
+          <a href="{{ url_for('enseignant.liste_reclamations', matiere_id=matiere._id) }}">📩 Voir les réclamations</a>
+        </div>
+      {% endfor %}
+    </div>
+
+    <h3>⚠️ Réclamations en attente</h3>
+    <ul class="reclamation-list">
+      {% for rec in reclamations %}
+        <li class="reclamation-item">
+          <strong>Étudiant :</strong> {{ rec.nom_etudiant }}<br>
+          <strong>Matière :</strong> {{ rec.nom_matiere }}<br>
+          <strong>Commentaire :</strong> {{ rec.commentaire }}
+        </li>
+      {% else %}
+        <li>Aucune réclamation en attente.</li>
+      {% endfor %}
+    </ul>
+
+    {% if reclamations %}
+    <form method="POST" action="{{ url_for('enseignant.supprimer_toutes_reclamations_enseignant') }}">
+      <button class="btn" type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer TOUTES vos réclamations ? Cette action est irréversible.')">
+        🗑️ Supprimer toutes les réclamations
+      </button>
+    </form>
+    {% endif %}
+  </div>
+
+  <a class="logout" href="/logout" onclick="return confirm('Voulez-vous vous déconnecter ?')">🚪 Déconnexion</a>
+
+</body>
+</html>

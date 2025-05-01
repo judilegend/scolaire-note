@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Profil Utilisateur</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f5;
+            padding: 40px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #2e8a67;
+            margin-bottom: 30px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 12px;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        strong {
+            color: #2e8a67;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 30px;
+            color: #2e8a67;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .back-link {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>👤 Profil de {{ user.role | capitalize }}</h2>
+
+        <ul>
+            <li><strong>Email :</strong> {{ user.email }}</li>
+            <li><strong>Rôle :</strong> {{ user.role }}</li>
+
+            {% if user.role == 'etudiant' %}
+                <li><strong>Nom :</strong> {{ user.nom }}</li>
+                <li><strong>Numéro :</strong> {{ user.numero }}</li>
+                <li><strong>Parcours :</strong> {{ user.parcours }}</li>
+                <li><strong>Niveau :</strong> {{ user.niveau }}</li>
+
+            {% elif user.role == 'enseignant' %}
+                <li><strong>Nom :</strong> {{ user.nom }}</li>
+                <li><strong>Spécialité :</strong> {{ user.matiere }}</li>
+
+            {% elif user.role == 'admin' %}
+                <li><strong>Nom :</strong> {{ user.nom }}</li>
+                <li><strong>Service :</strong> {{ user.identifiant }}</li>
+            {% endif %}
+        </ul>
+
+        <div class="back-link">
+            <a href="{{ url_for('admin.liste_attente') }}">⬅ Retour à la liste des utilisateurs</a>
+        </div>
+    </div>
+
+</body>
+</html>

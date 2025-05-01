@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Bienvenue - Plateforme Scolarité</title>
+    <style>
+      /* Variables globales */
+      :root {
+          --primary-color: #2e8a67;
+          --primary-hover: #28a776;
+          --secondary-color: #2c3e50;
+          --light-bg: #f8f9fa;
+          --gradient-start: #e0f7fa;
+          --gradient-end: #ffffff;
+          --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+          --shadow-md: 0 4px 8px rgba(0,0,0,0.1);
+          --shadow-lg: 0 8px 16px rgba(0,0,0,0.15);
+          --border-radius: 10px;
+          --spacing-sm: 10px;
+          --spacing-md: 20px;
+          --spacing-lg: 40px;
+      }
+
+      /* Reset et styles de base */
+      * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+      }
+
+      body {
+          font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+          background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+          color: #333;
+          line-height: 1.6;
+      }
+      /*laye section*/
+            .layer {
+              position: absolute;
+              width: 200px;
+              height: 200px;
+              top: 200px;
+              right: 10px;
+              overflow-x: visible;
+              z-index: 10;
+
+              opacity: 0.7;
+            }
+            .layer img{
+                  width: 100%;
+          height: 100%;
+          object-fit: cover;
+          /* filter: blur(2px); valeur ajustable */
+          opacity: 0.8; /
+            }
+      /*blob section*/
+            .blob-background {
+              position: absolute;
+              width: 200px;
+              height: 200px;
+              top: 280px;
+              left: 10px;
+              overflow-x: visible;
+              z-index: 10;
+              opacity: 0.7;
+            }
+            /*blob image*/
+         .blob-background img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          top: 0;
+          filter: blur(4px); /* valeur ajustable */
+          opacity: 0.8; /* tu peux aussi jouer sur la transparence */
+          }
+
+
+      .container {
+          width: 90%;
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 15px;
+      }
+
+      /* Navbar */
+      .navbar {
+          background-color: white;
+          box-shadow: var(--shadow-sm);
+          padding: 15px 0;
+          position: sticky;
+          top: 0;
+          z-index: 1000;
+      }
+
+      .navbar-container {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+      }
+
+      .logo {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          text-decoration: none;
+          color: var(--secondary-color);
+          font-weight: bold;
+          font-size: 1.4rem;
+      }
+
+      .logo-icon {
+          font-size: 1.8rem;
+      }
+
+      .nav-links {
+          display: flex;
+          gap: 20px;
+      }
+
+      .btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          font-size: small;
+          padding: 10px 20px;
+          border-radius: var(--border-radius);
+          text-decoration: none;
+          font-weight: 500;
+          transition: all 0.3s ease;
+      }
+
+      .btn-primary {
+          background-color: var(--primary-color);
+          color: white;
+          box-shadow: var(--shadow-sm);
+      }
+
+      .btn-primary:hover {
+          background-color: var(--primary-hover);
+          box-shadow: var(--shadow-md);
+          transform: translateY(-2px);
+      }
+
+      .btn-outline {
+          border: 2px solid var(--primary-color);
+          color: var(--primary-color);
+          background-color: transparent;
+      }
+
+      .btn-outline:hover {
+          background-color: var(--primary-color);
+          color: white;
+          transform: translateY(-2px);
+      }
+
+      /* Hero Section */
+      .hero {
+          padding: var(--spacing-lg) 0;
+          text-align: center;
+          margin-bottom: var(--spacing-lg);
+      }
+
+      .hero h1 {
+          font-size: 2.8rem;
+          color: var(--secondary-color);
+          margin-bottom: var(--spacing-md);
+          animation: fadeIn 1s ease-in-out;
+      }
+
+      .hero p {
+          font-size: 1.2rem;
+          max-width: 700px;
+          margin: 0 auto var(--spacing-lg) auto;
+          color: #555;
+      }
+
+      .cta-buttons {
+          display: flex;
+          justify-content: center;
+          gap: var(--spacing-md);
+          margin-top: var(--spacing-md);
+      }
+
+      /* Features Section */
+      .features-section {
+          padding: var(--spacing-lg) 0;
+          background-color: var(--light-bg);
+          border-radius: var(--border-radius);
+          margin-bottom: var(--spacing-lg);
+      }
+
+      .section-title {
+          text-align: center;
+          margin-bottom: var(--spacing-lg);
+          color: var(--secondary-color);
+          font-size: 2rem;
+      }
+
+      .features {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          gap: 30px;
+      }
+
+      .feature-card {
+          background-color: white;
+          padding: var(--spacing-md);
+          border-radius: var(--border-radius);
+          box-shadow: var(--shadow-md);
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+          text-align: center;
+      }
+
+      .feature-card:hover {
+          transform: translateY(-5px);
+          box-shadow: var(--shadow-lg);
+      }
+
+      .feature-icon {
+          font-size: 2.5rem;
+          margin-bottom: var(--spacing-sm);
+          color: var(--primary-color);
+      }
+
+      .feature-card h3 {
+          margin-bottom: var(--spacing-sm);
+          color: var(--secondary-color);
+      }
+
+      .feature-card p {
+          color: #555;
+      }
+
+      /* Footer */
+      .footer {
+          background-color: var(--secondary-color);
+          color: white;
+          padding: var(--spacing-lg) 0;
+          text-align: center;
+          margin-top: var(--spacing-lg);
+      }
+
+      .footer p {
+          margin-bottom: var(--spacing-sm);
+      }
+
+      /* Animations */
+      @keyframes fadeIn {
+          from {
+              opacity: 0;
+              transform: translateY(20px);
+          }
+          to {
+              opacity: 1;
+              transform: translateY(0);
+          }
+      }
+
+      /* Media Queries */
+      @media (max-width: 768px) {
+          .cta-buttons {
+              flex-direction: column;
+              align-items: center;
+          }
+
+          .hero h1 {
+              font-size: 2.2rem;
+          }
+
+          .navbar-container {
+              flex-direction: column;
+              gap: 15px;
+          }
+
+          .features {
+              grid-template-columns: 1fr;
+          }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layer">
+      <img
+        src="{{ url_for('static', filename='image/Background/layer.png') }}"
+        alt="bg"
+        class="oval"
+      />
+    </div>
+    <div class="blob-background">
+      <!-- Background effect achieved with CSS gradients -->
+      <img src="{{ url_for('static', filename='image/Deco left.png') }}" />
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="container navbar-container">
+        <span class="logo-icon">🎓</span>
+        <!-- <span>GestionScolaire</span> -->
+        <div class="nav-links">
+          <a href="{{ url_for('auth.connexion') }}" class="btn btn-outline">
+            <i class="fas fa-sign-in-alt"></i> Se connecter
+          </a>
+          <a href="{{ url_for('auth.inscription') }}" class="btn btn-primary">
+            <i class="fas fa-user-plus"></i> S'inscrire
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container">
+        <h1>Votre parcours académique simplifié</h1>
+        <p>
+          Notre plateforme de gestion scolaire vous permet de suivre vos notes,
+          consulter vos matières et communiquer avec vos enseignants en toute
+          simplicité.
+        </p>
+        <div class="cta-buttons">
+          <a href="{{ url_for('auth.connexion') }}" class="btn btn-primary">
+            <i class="fas fa-sign-in-alt"></i> Accéder à mon espace
+          </a>
+          <a href="#features" class="btn btn-outline">
+            <i class="fas fa-info-circle"></i> Découvrir les fonctionnalités
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features-section">
+      <div class="container">
+        <h2 class="section-title">Nos fonctionnalités</h2>
+        <div class="features">
+          <div class="feature-card">
+            <div class="feature-icon">📄</div>
+            <h3>Consulter vos notes</h3>
+            <p>
+              Accédez à toutes vos évaluations et moyennes en temps réel, avec
+              historique et graphiques d'évolution.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📚</div>
+            <h3>Voir les matières</h3>
+            <p>
+              Consultez les matières selon votre parcours et niveau, avec les
+              détails des programmes et ressources.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">✉️</div>
+            <h3>Réclamations</h3>
+            <p>
+              Soumettez une réclamation et recevez une réponse de vos
+              enseignants dans un délai optimal.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🧑‍🏫</div>
+            <h3>Interface Enseignant</h3>
+            <p>
+              Gérez les notes, traitez les réclamations et consultez les
+              informations de vos étudiants.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">👨‍💼</div>
+            <h3>Espace Admin</h3>
+            <p>
+              Gérez les utilisateurs, les matières et toutes les données de la
+              plateforme de manière centralisée.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📱</div>
+            <h3>Responsive Design</h3>
+            <p>
+              Accédez à la plateforme depuis n'importe quel appareil -
+              ordinateur, tablette ou smartphone.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials Section (Optional) -->
+    <section class="container">
+      <h2 class="section-title">Ce que disent nos utilisateurs</h2>
+      <div class="features">
+        <div class="feature-card">
+          <p>
+            "Cette plateforme a complètement transformé ma façon de suivre mes
+            études. Tout est accessible et clair."
+          </p>
+          <h3>Marie L.</h3>
+          <p>Étudiante en L2</p>
+        </div>
+        <div class="feature-card">
+          <p>
+            "En tant qu'enseignant, je peux gérer mes classes et communiquer
+            avec mes étudiants efficacement."
+          </p>
+          <h3>Prof. Martin</h3>
+          <p>Département d'Informatique</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <p>© 2023 Plateforme de Gestion Scolaire. Tous droits réservés.</p>
+        <p>Une solution moderne pour l'éducation d'aujourd'hui</p>
+      </div>
+    </footer>
+
+    <!-- Script pour le défilement doux -->
+    <script>
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          document.querySelector(this.getAttribute("href")).scrollIntoView({
+            behavior: "smooth",
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
