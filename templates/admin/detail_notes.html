@@ -1,113 +1,124 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Détails des notes</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f6f9;
-            padding: 40px;
-            color: #333;
-        }
-
-        h2 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 30px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        thead {
-            background-color: #2e8a67;
-            color: #fff;
-        }
-
-        th, td {
-            padding: 14px 16px;
-            text-align: center;
-            border-bottom: 1px solid #ddd;
-        }
-
-        tbody tr:hover {
-            background-color: #f0f0f0;
-        }
-
-        a {
-            color: #2e8a67;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        .actions {
-            margin-top: 30px;
-            text-align: center;
-        }
-
-        .actions a {
-            display: inline-block;
-            margin: 10px;
-            padding: 12px 20px;
-            background-color: #2e8a67;
-            color: #fff;
-            border-radius: 6px;
-            text-decoration: none;
-            transition: background 0.3s ease;
-        }
-
-        .actions a:hover {
-            background-color: #28a776;
-        }
-    </style>
-</head>
-<body>
-
-    <h2>🧑‍🎓 Notes détaillées de {{ etudiant.nom }} ({{ etudiant["numero"] }})</h2>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Matière</th>
-                <th>Coefficient</th>
-                <th>Note</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in details %}
-            <tr>
-                <td>{{ item.matiere }}</td>
-                <td>{{ item.coefficient }}</td>
-                <td>{{ item.note }}</td>
-                <td>
-                    {% if item.id_note %}
-                        <a href="{{ url_for('admin.modifier_note', note_id=item.id_note) }}">✏️ Modifier</a>
-                    {% else %}
-                        -
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <div class="actions">
-        <a href="{{ url_for('admin.voir_moyennes') }}">⬅️ Retour aux moyennes</a>
-        <a href="{{ url_for('admin.dashboard') }}">🏠 Tableau de bord</a>
+{% extends "admin/layout.html" %} {% block title %}Détails des notes - {{
+etudiant.nom }}{% endblock %} {% block page_title %}Détails des notes - {{
+etudiant.nom }}{% endblock %} {% block content %}
+<div class="student-info card">
+  <div class="student-header">
+    <div class="student-avatar">
+      <img
+        src="https://ui-avatars.com/api/?name={{ etudiant.nom }}&background=random"
+        alt="{{ etudiant.nom }}"
+      />
     </div>
+    <div class="student-details">
+      <h2>{{ etudiant.nom }}</h2>
+      <div class="student-meta">
+        <span class="badge badge-info"
+          ><i class="fas fa-id-card"></i> {{ etudiant.numero }}</span
+        >
+        <span class="badge badge-info"
+          ><i class="fas fa-graduation-cap"></i> {{ etudiant.niveau }}</span
+        >
+        <span class="badge badge-info"
+          ><i class="fas fa-bookmark"></i> {{ etudiant.parcours }}</span
+        >
+        <span class="badge badge-info"
+          ><i class="fas fa-envelope"></i> {{ etudiant.email }}</span
+        >
+      </div>
+    </div>
+  </div>
+</div>
 
-</body>
-</html>
+<div class="card">
+  <h3><i class="fas fa-clipboard-list"></i> Notes détaillées</h3>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th><i class="fas fa-book"></i> Matière</th>
+          <th><i class="fas fa-balance-scale"></i> Coefficient</th>
+          <th><i class="fas fa-star"></i> Note</th>
+          <th><i class="fas fa-cogs"></i> Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in details %}
+        <tr>
+          <td>{{ item.matiere }}</td>
+          <td>{{ item.coefficient }}</td>
+          <td>
+            {% if item.note %}
+            <strong>{{ item.note }}</strong>
+            {% else %}
+            <span class="text-muted">Non noté</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if item.id_note %}
+            <a
+              href="{{ url_for('admin.modifier_note', note_id=item.id_note) }}"
+              class="btn btn-sm btn-primary"
+            >
+              <i class="fas fa-edit"></i> Modifier
+            </a>
+            {% else %}
+            <span class="text-muted">-</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="action-links">
+  <a href="{{ url_for('admin.voir_moyennes') }}" class="action-link">
+    <i class="fas fa-arrow-left"></i> Retour aux moyennes
+  </a>
+  <!-- <a
+    href="{{ url_for('student.generer_pdf', etudiant_id=etudiant._id) }}"
+    target="_blank"
+    class="action-link"
+  >
+    <i class="fas fa-file-pdf"></i> Générer PDF
+  </a> -->
+</div>
+
+<style>
+  .student-info {
+    margin-bottom: 30px;
+  }
+
+  .student-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .student-avatar img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid var(--primary-color);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .student-details h2 {
+    margin: 0 0 10px 0;
+    color: var(--primary-color);
+  }
+
+  .student-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .text-muted {
+    color: var(--text-light);
+    font-style: italic;
+  }
+</style>
+{% endblock %}

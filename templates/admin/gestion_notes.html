@@ -1,205 +1,17 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gestion des notes</title>
-<style>
-/* Style de base pour le corps de la page */
-body {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(to right, #e0f7fa, #ffffff);
-  margin: 0;
-  padding: 30px;
-  color: #333;
-  line-height: 1.6;
-}
+{% extends "admin/layout.html" %}
 
-/* Conteneur principal pour centrer le contenu */
-.container {
-  max-width: 1000px;
-  margin: 0 auto;
-  background-color: white;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-}
+{% block title %}Gestion des Notes{% endblock %}
 
-/* Style des titres */
-h2 {
-  color: #2c3e50;
-  margin-top: 0;
-  margin-bottom: 25px;
-  font-size: 28px;
-  border-bottom: 2px solid #e0f7fa;
-  padding-bottom: 10px;
-}
+{% block page_title %}Gestion des Notes{% endblock %}
 
-h3 {
-  color: #2e8a67;
-  margin-top: 30px;
-  margin-bottom: 20px;
-  font-size: 22px;
-}
-
-/* Style du formulaire de sélection de matière */
-.form-group {
-  margin-bottom: 25px;
-}
-
-label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 600;
-  color: #2c3e50;
-}
-
-select {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 16px;
-  color: #333;
-  background-color: white;
-  cursor: pointer;
-  font-family: inherit;
-}
-
-select:focus {
-  outline: none;
-  border-color: #2e8a67;
-  box-shadow: 0 0 0 2px rgba(46, 138, 103, 0.2);
-}
-
-/* Style du tableau des notes */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 20px 0;
-  background-color: white;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-thead {
-  background-color: #2e8a67;
-  color: white;
-}
-
-th, td {
-  padding: 15px;
-  text-align: left;
-  border-bottom: 1px solid #eee;
-}
-
-th {
-  font-weight: 600;
-}
-
-tr:hover {
-  background-color: #f9f9f9;
-}
-
-/* Style des champs de saisie de notes */
-input[type="number"] {
-  width: 80px;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  text-align: center;
-  font-size: 16px;
-}
-
-input[type="number"]:focus {
-  outline: none;
-  border-color: #2e8a67;
-  box-shadow: 0 0 0 2px rgba(46, 138, 103, 0.2);
-}
-
-/* Style des boutons */
-button {
-  background-color: #2e8a67;
-  color: white;
-  border: none;
-  padding: 12px 25px;
-  border-radius: 6px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-button:hover {
-  background-color: #28a776;
-}
-
-/* Style du lien de retour */
-.back-link {
-  display: inline-block;
-  margin-top: 30px;
-  color: #2c3e50;
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.3s ease;
-}
-
-.back-link:hover {
-  color: #2e8a67;
-}
-
-/* Style des messages d'erreur */
-.error-list {
-  background-color: #ffebee;
-  border-left: 4px solid #e74c3c;
-  padding: 15px;
-  border-radius: 4px;
-  margin: 20px 0;
-}
-
-.error-item {
-  color: #c0392b;
-  margin: 5px 0;
-  list-style-type: none;
-}
-
-/* Message indiquant qu'aucun étudiant n'est disponible */
-.no-students {
-  background-color: #f8f9fa;
-  padding: 20px;
-  border-radius: 6px;
-  text-align: center;
-  color: #666;
-}
-
-/* Style pour les appareils mobiles */
-@media (max-width: 768px) {
-  .container {
-    padding: 20px;
-  }
-  
-  table {
-    font-size: 14px;
-  }
-  
-  th, td {
-    padding: 10px;
-  }
-  
-  input[type="number"] {
-    width: 60px;
-  }
-}
-</style>
-</head>
-<body>
-<div class="container">
-  <h2>Attribuer des notes</h2>
+{% block content %}
+<div class="card">
+  <h2><i class="fas fa-clipboard-list"></i> Attribuer des notes</h2>
   
   <!-- Formulaire de sélection de matière -->
   <div class="form-group">
     <form method="POST">
-      <label for="matiere">Choisir une matière :</label>
+      <label for="matiere"><i class="fas fa-book"></i> Choisir une matière :</label>
       <select name="matiere_id" onchange="this.form.submit()">
         <option value="">-- Choisir une matière --</option>
         {% for matiere in matieres %}
@@ -213,55 +25,126 @@ button:hover {
   
   <!-- Affichage des étudiants pour la matière sélectionnée -->
   {% if matiere_selectionnee %}
-    <h3>Matière sélectionnée : {{ matiere_selectionnee.nom }}</h3>
+    <div class="selected-subject">
+      <h3><i class="fas fa-book-open"></i> Matière sélectionnée : {{ matiere_selectionnee.nom }}</h3>
+      <div class="badge badge-info">
+        <i class="fas fa-graduation-cap"></i> {{ matiere_selectionnee.niveau }} - {{ matiere_selectionnee.parcours }}
+      </div>
+      <div class="badge badge-info">
+        <i class="fas fa-balance-scale"></i> Coefficient : {{ matiere_selectionnee.coefficient }}
+      </div>
+    </div>
     
     {% if etudiants %}
       <form method="POST">
         <input type="hidden" name="matiere_id" value="{{ matiere_selectionnee._id }}">
         
-        <table>
-          <thead>
-            <tr>
-              <th>Numéro</th>
-              <th>Nom</th>
-              <th>Note</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for etudiant in etudiants %}
-            <tr>
-              <td>{{ etudiant.numero }}</td>
-              <td>{{ etudiant.nom }}</td>
-              <td>
-                <input type="number" name="note_{{ etudiant._id }}" min="0" max="20" step="0.5">
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th><i class="fas fa-id-card"></i> Numéro</th>
+                <th><i class="fas fa-user"></i> Nom</th>
+                <th><i class="fas fa-star"></i> Note</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for etudiant in etudiants %}
+              <tr>
+                <td>{{ etudiant.numero }}</td>
+                <td>{{ etudiant.nom }}</td>
+                <td>
+                  <input type="number" name="note_{{ etudiant._id }}" min="0" max="20" step="0.5" 
+                    value="{{ notes.get(etudiant._id, '') }}" placeholder="/ 20">
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
         
-        <button type="submit">Enregistrer les notes</button>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save"></i> Enregistrer les notes
+          </button>
+        </div>
       </form>
     {% else %}
-      <div class="no-students">
-        <p>Aucun étudiant pour le niveau {{ matiere_selectionnee.niveau }} et le parcours {{ matiere_selectionnee.parcours }}.</p>
+      <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i> Aucun étudiant pour le niveau {{ matiere_selectionnee.niveau }} et le parcours {{ matiere_selectionnee.parcours }}.
       </div>
     {% endif %}
   {% endif %}
   
   <!-- Affichage des erreurs -->
   {% if erreurs %}
-    <div class="error-list">
+    <div class="alert alert-danger">
+      <h4><i class="fas fa-exclamation-triangle"></i> Erreurs</h4>
       <ul>
         {% for e in erreurs %}
-        <li class="error-item">{{ e }}</li>
+        <li>{{ e }}</li>
         {% endfor %}
       </ul>
     </div>
   {% endif %}
-  
-  <!-- Lien de retour au tableau de bord -->
-  <a href="{{ url_for('admin.dashboard') }}" class="back-link">⬅️ Retour au tableau de bord</a>
 </div>
-</body>
-</html>
+
+<style>
+  .selected-subject {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: rgba(46, 138, 103, 0.1);
+    border-radius: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .selected-subject h3 {
+    margin: 0;
+    flex: 1;
+    min-width: 200px;
+  }
+  
+  input[type="number"] {
+    width: 100px;
+    text-align: center;
+  }
+  
+  .form-actions {
+    margin-top: 30px;
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .alert {
+    padding: 15px;
+    border-radius: 10px;
+    margin: 20px 0;
+  }
+  
+  .alert-info {
+    background-color: rgba(52, 152, 219, 0.1);
+    color: #2980b9;
+    border-left: 4px solid #3498db;
+  }
+  
+  .alert-danger {
+    background-color: rgba(231, 76, 60, 0.1);
+    color: #c0392b;
+    border-left: 4px solid #e74c3c;
+  }
+  
+  .alert h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: inherit;
+  }
+  
+  .alert ul {
+    margin: 0;
+    padding-left: 20px;
+  }
+</style>
+{% endblock %}
