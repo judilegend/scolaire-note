@@ -1,169 +1,314 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard Admin</title>
-<style>
-/* Style de base pour le corps de la page */
-body {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(to right, #e0f7fa, #ffffff);
-  margin: 0;
-  padding: 30px;
-  color: #333;
-}
-
-/* Style du titre principal */
-h1 {
-  color: #2c3e50;
-  font-size: 2.5em;
-  margin-bottom: 20px;
-  text-align: center;
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
-}
-
-/* Style du paragraphe descriptif */
-.description {
-  text-align: center;
-  font-size: 18px;
-  margin-bottom: 40px;
-  color: #555;
-  max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* Layout principal en flexbox pour le tableau de bord */
-.dashboard {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 25px;
-  margin-bottom: 40px;
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* Style des cartes individuelles */
-.dashboard div {
-  background-color: #fff;
-  padding: 25px;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-  width: 250px;
-  text-align: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* Animation au survol des cartes */
-.dashboard div:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
-}
-
-/* Style des liens principaux */
-.dashboard div a {
-  display: block;
-  color: #2e8a67;
-  font-size: 18px;
-  font-weight: 600;
-  text-decoration: none;
-  margin: 10px 0;
-}
-
-/* Effet au survol des liens */
-.dashboard div a:hover {
-  color: #28a776;
-}
-
-/* Style des descriptions des cartes */
-.dashboard div span {
-  display: block;
-  margin-top: 12px;
-  font-size: 14px;
-  color: #666;
-  line-height: 1.4;
-}
-
-/* Style du bouton de déconnexion */
-.logout {
-  background-color: #e74c3c;
-  color: white;
-  padding: 15px 25px;
-  border-radius: 8px;
-  font-size: 18px;
-  max-width: 250px;
-  margin: 30px auto 0;
-  text-align: center;
-  display: block;
-  text-decoration: none;
-  font-weight: 500;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  transition: background-color 0.3s ease;
-}
-
-/* Effet au survol du bouton de déconnexion */
-.logout:hover {
-  background-color: #c0392b;
-}
-
-/* Effet au clic du bouton de déconnexion */
-.logout:active {
-  transform: translateY(2px);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-/* Media query pour l'adaptation aux petits écrans */
-@media (max-width: 768px) {
-  .dashboard div {
-    width: 100%;
-    max-width: 300px;
-  }
-  
-  body {
-    padding: 15px;
-  }
-  
-  h1 {
-    font-size: 2em;
-  }
-}
-</style>
-</head>
-<body>
-<!-- Titre principal avec nom d'utilisateur dynamique -->
-<h1>Bienvenue, {{ user.nom }} (Admin)</h1>
-
-<!-- Description du tableau de bord -->
-<p class="description">Gérez les étudiants, les matières, et les résultats directement depuis ce tableau de bord interactif.</p>
-
-<!-- Conteneur principal avec les différentes cartes d'action -->
-<div class="dashboard">
-  <div>
-    <a href="{{ url_for('admin.gerer_etudiants') }}">👥 Gérer les étudiants</a>
-    <span>Ajoutez, modifiez ou supprimez des étudiants.</span>
-  </div>
-  <div>
-    <a href="{{ url_for('admin.matieres') }}">📚 Gérer les matières</a>
-    <span>Créez, mettez à jour ou supprimez des matières proposées.</span>
-  </div>
-  <div>
-    <a href="{{ url_for('admin.gestion_notes') }}">📝 Gérer les notes</a>
-    <span>Saisissez et gérez les notes des étudiants pour chaque matière.</span>
-  </div>
-  <div>
-    <a href="{{ url_for('admin.publier_resultats') }}">📊 Publier les résultats</a>
-    <span>Publiez les résultats des étudiants après vérification des notes.</span>
-  </div>
-  <div>
-    <a href="{{ url_for('admin.liste_attente') }}">⏳ Liste des attentes</a>
-    <span>Consultez les étudiants en attente d'acceptation ou de validation.</span>
+{% extends "admin/layout.html" %} {% block title %}Tableau de bord -
+Administration{% endblock %} {% block page_title %}Bienvenue, {{ user.nom }}{%
+endblock %} {% block content %}
+<!-- Introduction avec animation -->
+<div class="welcome-section card">
+  <div class="welcome-content">
+    <div class="welcome-icon">
+      <i class="fas fa-user-shield"></i>
+    </div>
+    <div class="welcome-text">
+      <p class="description">
+        Bienvenue dans votre espace d'administration. Gérez les étudiants, les
+        matières, et les résultats directement depuis ce tableau de bord
+        interactif.
+      </p>
+    </div>
   </div>
 </div>
 
-<!-- Bouton de déconnexion avec confirmation -->
-<a class="logout" href="/logout" onclick="return confirm('Voulez-vous vous déconnecter ?')">Déconnexion</a>
-</body>
-</html>
+<!-- Statistiques rapides -->
+<div class="stats-container">
+  <div class="stat-card">
+    <div class="stat-icon">
+      <i class="fas fa-user-graduate"></i>
+    </div>
+    <div class="stat-info">
+      <h4>Étudiants</h4>
+      <p>{{ nb_etudiants }}</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon">
+      <i class="fas fa-book"></i>
+    </div>
+    <div class="stat-info">
+      <h4>Matières</h4>
+      <p>{{ nb_matieres }}</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon">
+      <i class="fas fa-user-clock"></i>
+    </div>
+    <div class="stat-info">
+      <h4>En attente</h4>
+      <p>{{ nb_attente }}</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon">
+      <i class="fas fa-clipboard-list"></i>
+    </div>
+    <div class="stat-info">
+      <h4>Notes</h4>
+      <p>{{ nb_notes }}</p>
+    </div>
+  </div>
+</div>
+
+<!-- Cartes principales -->
+<h3 class="section-title">
+  <i class="fas fa-th-large"></i> Services disponibles
+</h3>
+
+<div class="dashboard-grid">
+  <div class="dashboard-card">
+    <div class="card-header">
+      <div class="card-icon">
+        <i class="fas fa-user-graduate"></i>
+      </div>
+      <h3>Gérer les étudiants</h3>
+    </div>
+    <div class="card-body">
+      <p>Ajoutez, modifiez ou supprimez des étudiants.</p>
+      <ul class="feature-list">
+        <li><i class="fas fa-check-circle"></i> Liste complète</li>
+        <li><i class="fas fa-check-circle"></i> Recherche avancée</li>
+        <li><i class="fas fa-check-circle"></i> Modification des profils</li>
+      </ul>
+    </div>
+    <div class="card-footer">
+      <a href="{{ url_for('admin.gerer_etudiants') }}" class="btn btn-primary">
+        <i class="fas fa-users"></i> Accéder
+      </a>
+    </div>
+  </div>
+
+  <div class="dashboard-card">
+    <div class="card-header">
+      <div class="card-icon">
+        <i class="fas fa-book"></i>
+      </div>
+      <h3>Gérer les matières</h3>
+    </div>
+    <div class="card-body">
+      <p>Créez, mettez à jour ou supprimez des matières proposées.</p>
+      <ul class="feature-list">
+        <li><i class="fas fa-check-circle"></i> Ajout de matières</li>
+        <li><i class="fas fa-check-circle"></i> Attribution de coefficients</li>
+        <li><i class="fas fa-check-circle"></i> Affectation aux parcours</li>
+      </ul>
+    </div>
+    <div class="card-footer">
+      <a href="{{ url_for('admin.matieres') }}" class="btn btn-primary">
+        <i class="fas fa-book-open"></i> Accéder
+      </a>
+    </div>
+  </div>
+
+  <div class="dashboard-card">
+    <div class="card-header">
+      <div class="card-icon">
+        <i class="fas fa-clipboard-list"></i>
+      </div>
+      <h3>Gérer les notes</h3>
+    </div>
+    <div class="card-body">
+      <p>Saisissez et gérez les notes des étudiants pour chaque matière.</p>
+      <ul class="feature-list">
+        <li><i class="fas fa-check-circle"></i> Saisie par matière</li>
+        <li><i class="fas fa-check-circle"></i> Modification des notes</li>
+        <li><i class="fas fa-check-circle"></i> Calcul automatique</li>
+      </ul>
+    </div>
+    <div class="card-footer">
+      <a href="{{ url_for('admin.gestion_notes') }}" class="btn btn-primary">
+        <i class="fas fa-pen"></i> Accéder
+      </a>
+    </div>
+  </div>
+
+  <div class="dashboard-card">
+    <div class="card-header">
+      <div class="card-icon">
+        <i class="fas fa-chart-bar"></i>
+      </div>
+      <h3>Consulter les moyennes</h3>
+    </div>
+    <div class="card-body">
+      <p>Visualisez les moyennes et classements des étudiants.</p>
+      <ul class="feature-list">
+        <li><i class="fas fa-check-circle"></i> Classement par parcours</li>
+        <li><i class="fas fa-check-circle"></i> Filtrage par niveau</li>
+        <li><i class="fas fa-check-circle"></i> Export des résultats</li>
+      </ul>
+    </div>
+    <div class="card-footer">
+      <a href="{{ url_for('admin.voir_moyennes') }}" class="btn btn-primary">
+        <i class="fas fa-chart-line"></i> Accéder
+      </a>
+    </div>
+  </div>
+
+  <div class="dashboard-card">
+    <div class="card-header">
+      <div class="card-icon">
+        <i class="fas fa-bullhorn"></i>
+      </div>
+      <h3>Publier les résultats</h3>
+    </div>
+    <div class="card-body">
+      <p>Publiez les résultats des étudiants après vérification des notes.</p>
+      <ul class="feature-list">
+        <li><i class="fas fa-check-circle"></i> Publication par parcours</li>
+        <li><i class="fas fa-check-circle"></i> Notification par email</li>
+        <li><i class="fas fa-check-circle"></i> Confirmation de publication</li>
+      </ul>
+    </div>
+    <div class="card-footer">
+      <a
+        href="{{ url_for('admin.publier_resultats') }}"
+        class="btn btn-primary"
+      >
+        <i class="fas fa-paper-plane"></i> Accéder
+      </a>
+    </div>
+  </div>
+
+  <div class="dashboard-card">
+    <div class="card-header">
+      <div class="card-icon">
+        <i class="fas fa-user-clock"></i>
+      </div>
+      <h3>Liste des attentes</h3>
+    </div>
+    <div class="card-body">
+      <p>Consultez les étudiants en attente d'acceptation ou de validation.</p>
+      <ul class="feature-list">
+        <li><i class="fas fa-check-circle"></i> Validation des comptes</li>
+        <li><i class="fas fa-check-circle"></i> Vérification des profils</li>
+        <li><i class="fas fa-check-circle"></i> Gestion des accès</li>
+      </ul>
+    </div>
+    <div class="card-footer">
+      <a href="{{ url_for('admin.liste_attente') }}" class="btn btn-primary">
+        <i class="fas fa-user-check"></i> Accéder
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Welcome section */
+  .welcome-section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+  }
+
+  .welcome-content {
+    display: flex;
+    align-items: center;
+  }
+
+  .welcome-icon {
+    background-color: rgba(46, 138, 103, 0.1);
+    color: var(--primary-color);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1.5rem;
+    font-size: 1.8rem;
+  }
+
+  .welcome-text {
+    flex: 1;
+  }
+
+  .welcome-text .description {
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.6;
+  }
+
+  /* Section title */
+  .section-title {
+    margin: 2rem 0 1.5rem 0;
+    font-size: 1.4rem;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* Feature list */
+  .feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+  }
+
+  .feature-list li {
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+  }
+
+  .feature-list li i {
+    color: var(--primary-color);
+    margin-right: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  /* Card structure */
+  .card-header {
+    padding: 1.2rem;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .card-icon {
+    color: var(--primary-color);
+    margin-right: 1rem;
+  }
+
+  .card-icon i {
+    font-size: 1.9rem;
+  }
+
+  .card-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--primary-color);
+  }
+
+  .card-body {
+    padding: 1.5rem;
+    flex: 1;
+  }
+
+  .card-body p {
+    margin-top: 0;
+    font-size: 1rem;
+    color: var(--text-light);
+  }
+
+  .card-footer {
+    padding: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+  }
+
+  .card-footer .btn {
+    width: 100%;
+  }
+</style>
+{% endblock %}
