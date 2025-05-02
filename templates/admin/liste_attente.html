@@ -1,138 +1,100 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Liste des comptes en attente</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f7f9fc;
-            padding: 40px;
-            color: #333;
-        }
+{% extends "admin/layout.html" %} {% block title %}Liste des comptes en
+attente{% endblock %} {% block page_title %}Liste des comptes en attente{%
+endblock %} {% block content %}
+<div class="card">
+  <h3><i class="fas fa-user-clock"></i> Comptes en attente de validation</h3>
 
-        h2 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 30px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        thead {
-            background-color: #2e8a67;
-            color: #fff;
-        }
-
-        th, td {
-            padding: 14px 16px;
-            text-align: center;
-            border-bottom: 1px solid #ddd;
-        }
-
-        tbody tr:hover {
-            background-color: #f0f0f0;
-        }
-
-        a {
-            color: #2e8a67;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        button {
-            padding: 8px 14px;
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .accept {
-            background-color: #28a776;
-            color: white;
-        }
-
-        .refuse {
-            background-color: #e74c3c;
-            color: white;
-        }
-
-        .accept:hover {
-            background-color: #239765;
-        }
-
-        .refuse:hover {
-            background-color: #c0392b;
-        }
-
-        .back-link {
-            display: block;
-            margin-top: 30px;
-            text-align: center;
-        }
-
-        .back-link a {
-            background-color: #2e8a67;
-            color: #fff;
-            padding: 12px 20px;
-            border-radius: 6px;
-            text-decoration: none;
-        }
-
-        .back-link a:hover {
-            background-color: #28a776;
-        }
-    </style>
-</head>
-<body>
-
-    <h2>🕒 Comptes en attente de validation</h2>
-
+  {% if utilisateurs_en_attente %}
+  <div class="table-container">
     <table>
-        <thead>
-            <tr>
-                <th>👤 Nom</th>
-                <th>📧 Email</th>
-                <th>🛠️ Rôle demandé</th>
-                <th>🔍 Détails du profil</th>
-                <th>✅/❌ Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for user in utilisateurs_en_attente %}
-            <tr>
-                <td>{{ user.nom }}</td>
-                <td>{{ user.email }}</td>
-                <td>{{ user.role }}</td>
-                <td><a href="{{ url_for('admin.consulter_profil', user_id=user._id) }}">Voir Profil</a></td>
-                <td>
-                    <form method="POST" action="{{ url_for('admin.accepter_utilisateur', user_id=user._id) }}" style="display:inline-block;">
-                        <button type="submit" class="accept" onclick="return confirm('✅ Confirmer l\'approbation de ce compte ?')">Accepter</button>
-                    </form>
-                    <form method="POST" action="{{ url_for('admin.refuser_utilisateur', user_id=user._id) }}" style="display:inline-block;">
-                        <button type="submit" class="refuse" onclick="return confirm('❌ Refuser définitivement ce compte ?')">Refuser</button>
-                    </form>   
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
+      <thead>
+        <tr>
+          <th><i class="fas fa-user"></i> Nom</th>
+          <th><i class="fas fa-envelope"></i> Email</th>
+          <th><i class="fas fa-user-tag"></i> Rôle demandé</th>
+          <th><i class="fas fa-info-circle"></i> Détails</th>
+          <th><i class="fas fa-cogs"></i> Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in utilisateurs_en_attente %}
+        <tr>
+          <td>{{ user.nom }}</td>
+          <td>{{ user.email }}</td>
+          <td>
+            {% if user.role == 'etudiant' %}
+            <span class="badge badge-info">Étudiant</span>
+            {% elif user.role == 'enseignant' %}
+            <span class="badge badge-info">Enseignant</span>
+            {% else %}
+            <span class="badge badge-info">{{ user.role }}</span>
+            {% endif %}
+          </td>
+          <td>
+            <a
+              href="{{ url_for('admin.consulter_profil', user_id=user._id) }}"
+              class="btn btn-sm btn-secondary"
+            >
+              <i class="fas fa-eye"></i> Voir Profil
+            </a>
+          </td>
+          <td class="action-buttons">
+            <form
+              method="POST"
+              action="{{ url_for('admin.accepter_utilisateur', user_id=user._id) }}"
+              style="display: inline-block"
+            >
+              <button
+                type="submit"
+                class="btn btn-sm btn-primary"
+                onclick="return confirm('Confirmer l\'approbation de ce compte ?')"
+              >
+                <i class="fas fa-check"></i> Accepter
+              </button>
+            </form>
+            <form
+              method="POST"
+              action="{{ url_for('admin.refuser_utilisateur', user_id=user._id) }}"
+              style="display: inline-block"
+            >
+              <button
+                type="submit"
+                class="btn btn-sm btn-danger"
+                onclick="return confirm('Refuser définitivement ce compte ?')"
+              >
+                <i class="fas fa-times"></i> Refuser
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
     </table>
+  </div>
+  {% else %}
+  <div class="alert alert-info">
+    <i class="fas fa-info-circle"></i> Aucun compte en attente de validation
+    pour le moment.
+  </div>
+  {% endif %}
+</div>
 
-    <div class="back-link">
-        <a href="{{ url_for('admin.dashboard') }}">⬅️ Retour au tableau de bord</a>
-    </div>
+<style>
+  .action-buttons {
+    display: flex;
+    gap: 10px;
+  }
 
-</body>
-</html>
+  .alert {
+    padding: 15px;
+    border-radius: 10px;
+    margin: 20px 0;
+  }
+
+  .alert-info {
+    background-color: rgba(52, 152, 219, 0.1);
+    color: #2980b9;
+    border-left: 4px solid #3498db;
+  }
+</style>
+{% endblock %}
