@@ -1,174 +1,156 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Publier les Résultats</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f5;
-            padding: 40px;
-            color: #333;
-        }
+{% extends "admin/layout.html" %}
 
-        h2, h3 {
-            color: #2e8a67;
-            text-align: center;
-        }
+{% block title %}Publier les Résultats{% endblock %}
 
-        form {
-            max-width: 600px;
-            margin: auto;
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
+{% block page_title %}Publication des Résultats{% endblock %}
 
-        label {
-            display: block;
-            margin: 10px 0 5px;
-            font-weight: bold;
-        }
-
-        select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-        }
-
-        button {
-            background-color: #2e8a67;
-            color: white;
-            padding: 10px 16px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        button:hover {
-            background-color: #28a776;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 30px auto;
-        }
-
-        th, td {
-            border: 1px solid #999;
-            padding: 10px;
-            text-align: center;
-        }
-
-        th {
-            background-color: #e6f4f1;
-        }
-
-        .message {
-            text-align: center;
-            color: green;
-            margin-top: 20px;
-        }
-
-        .no-result {
-            color: red;
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .back-link {
-            text-align: center;
-            margin-top: 30px;
-        }
-
-        .back-link a {
-            color: #2e8a67;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .back-link a:hover {
-            text-decoration: underline;
-        }
-    </style>
-</head>
-<body>
-
-    <h2>📢 Publication des Résultats de la Session</h2>
-
-    <form method="POST" action="{{ url_for('admin.publier_resultats') }}">
-        <label for="parcours">Parcours :</label>
-        <select name="parcours" required>
-            <option value="">-- Choisir --</option>
-            <option value="GID" {% if parcours_selectionne == "GID" %}selected{% endif %}>GID</option>
-            <option value="OCC" {% if parcours_selectionne == "OCC" %}selected{% endif %}>OCC</option>
-            <option value="IG" {% if parcours_selectionne == "IG" %}selected{% endif %}>IG</option>
-        </select>
-
-        <label for="niveau">Niveau :</label>
-        <select name="niveau" required>
-            <option value="">-- Choisir --</option>
-            <option value="M1" {% if niveau_selectionne == "M1" %}selected{% endif %}>M1</option>
-            <option value="M2" {% if niveau_selectionne == "M2" %}selected{% endif %}>M2</option>
-            <option value="L3" {% if niveau_selectionne == "L3" %}selected{% endif %}>L3</option>
-        </select>
-
-        <button type="submit">🔍 Voir les étudiants</button>
-    </form>
-
-    {% if etudiants %}
-        <hr>
-        <h3>📋 Étudiants pour {{ parcours_selectionne }} / {{ niveau_selectionne }}</h3>
-        <form method="POST" action="{{ url_for('admin.publier_resultats') }}">
-            <input type="hidden" name="parcours" value="{{ parcours_selectionne }}">
-            <input type="hidden" name="niveau" value="{{ niveau_selectionne }}">
-            <input type="hidden" name="confirmer" value="1">
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Numéro</th>
-                        <th>Nom</th>
-                        <th>Email</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for etudiant in etudiants %}
-                    <tr>
-                        <td>{{ etudiant.numero }}</td>
-                        <td>{{ etudiant.nom }}</td>
-                        <td>{{ etudiant.email }}</td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-
-            <button type="submit" onclick="return confirm('Confirmer la publication des résultats ?')">
-                ✅ Publier les résultats et envoyer les emails
-            </button>
-        </form>
-    {% elif parcours_selectionne and niveau_selectionne %}
-        <p class="no-result">❌ Aucun étudiant trouvé pour {{ parcours_selectionne }} / {{ niveau_selectionne }}.</p>
-    {% endif %}
-
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="message">
-                {% for category, message in messages %}
-                    <p>{{ message }}</p>
-                {% endfor %}
-            </div>
-        {% endif %}
-    {% endwith %}
-
-    <div class="back-link">
-        <a href="{{ url_for('admin.dashboard') }}">⬅️ Retour au tableau de bord</a>
+{% block content %}
+<div class="card">
+  <h3><i class="fas fa-bullhorn"></i> Publication des Résultats de la Session</h3>
+  
+  <form method="POST" action="{{ url_for('admin.publier_resultats') }}">
+    <div class="form-group">
+      <label><i class="fas fa-bookmark"></i> Parcours :</label>
+      <select name="parcours" required>
+        <option value="">-- Choisir --</option>
+        {% for p in parcours_list %}
+          <option value="{{ p }}" {% if parcours_selectionne == p %}selected{% endif %}>{{ p }}</option>
+        {% endfor %}
+      </select>
     </div>
 
-</body>
-</html>
+    <div class="form-group">
+      <label><i class="fas fa-graduation-cap"></i> Niveau :</label>
+      <select name="niveau" required>
+        <option value="">-- Choisir --</option>
+        {% for niv in niveaux %}
+          <option value="{{ niv }}" {% if niveau_selectionne == niv %}selected{% endif %}>{{ niv }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+      <i class="fas fa-search"></i> Voir les étudiants
+    </button>
+  </form>
+
+  {% if etudiants %}
+    <div class="results-section">
+      <h3><i class="fas fa-list"></i> Étudiants pour {{ parcours_selectionne }} / {{ niveau_selectionne }}</h3>
+      
+      <form method="POST" action="{{ url_for('admin.publier_resultats') }}">
+        <input type="hidden" name="parcours" value="{{ parcours_selectionne }}">
+        <input type="hidden" name="niveau" value="{{ niveau_selectionne }}">
+        <input type="hidden" name="confirmer" value="1">
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th><i class="fas fa-id-card"></i> Numéro</th>
+                <th><i class="fas fa-user"></i> Nom</th>
+                <th><i class="fas fa-envelope"></i> Email</th>
+                <th><i class="fas fa-star"></i> Moyenne</th>
+                <th><i class="fas fa-check-double"></i> Statut</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for etudiant in etudiants %}
+                <tr>
+                  <td>{{ etudiant.numero }}</td>
+                  <td>{{ etudiant.nom }}</td>
+                  <td>{{ etudiant.email }}</td>
+                  <td>
+                    {% if etudiant.moyenne %}
+                      <strong>{{ "%.2f"|format(etudiant.moyenne) }}</strong>
+                    {% else %}
+                      <span class="text-muted">Non calculée</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if etudiant.recommandation == "Admis" %}
+                      <span class="badge badge-success">{{ etudiant.recommandation }}</span>
+                    {% elif etudiant.recommandation == "Redouble" %}
+                      <span class="badge badge-danger">{{ etudiant.recommandation }}</span>
+                    {% else %}
+                      <span class="badge badge-warning">{{ etudiant.recommandation }}</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="publish-action">
+          <button type="submit" class="btn btn-primary" onclick="return confirm('Confirmer la publication des résultats ?')">
+            <i class="fas fa-paper-plane"></i> Publier les résultats et envoyer les emails
+          </button>
+        </div>
+      </form>
+    </div>
+  {% elif parcours_selectionne and niveau_selectionne %}
+    <div class="alert alert-warning">
+      <i class="fas fa-exclamation-triangle"></i> Aucun étudiant trouvé pour {{ parcours_selectionne }} / {{ niveau_selectionne }}.
+    </div>
+  {% endif %}
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-messages">
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">
+            <i class="fas fa-info-circle"></i> {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+</div>
+
+<style>
+  .results-section {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(226, 232, 240, 0.5);
+  }
+  
+  .publish-action {
+    margin-top: 20px;
+    text-align: center;
+  }
+  
+  .flash-messages {
+    margin-top: 20px;
+  }
+  
+  .alert {
+    padding: 15px;
+    border-radius: 10px;
+    margin: 10px 0;
+  }
+  
+  .alert-success {
+    background-color: rgba(46, 138, 103, 0.1);
+    color: var(--primary-color);
+    border-left: 4px solid var(--primary-color);
+  }
+  
+  .alert-warning {
+    background-color: rgba(255, 193, 7, 0.1);
+    color: #d39e00;
+    border-left: 4px solid #ffc107;
+  }
+  
+  .alert-danger {
+    background-color: rgba(231, 76, 60, 0.1);
+    color: var(--accent-color);
+    border-left: 4px solid var(--accent-color);
+  }
+  
+  .text-muted {
+    color: var(--text-light);
+    font-style: italic;
+  }
+</style>
+{% endblock %}

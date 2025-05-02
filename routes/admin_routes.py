@@ -30,9 +30,15 @@ def liste_etudiants():
     if session.get('role') != 'admin':
         return redirect(url_for('auth.connexion'))
     
+    #Récupérer les infos de user connecté
+    user_id = session.get('user_id')
+
+    user = infos_collection.find_one({"_id": ObjectId(user_id)})
+
+    
     # Récupérer tous les étudiants déjà approuvé
     etudiants = get_all_students()
-    return render_template('admin/liste_etudiants.html', etudiants=etudiants)
+    return render_template('admin/liste_etudiants.html', etudiants=etudiants, user=user)
 
 # Gestion etudiants
 @admin_bp.route("/etudiants", methods=["GET", "POST"])
@@ -40,6 +46,10 @@ def gerer_etudiants():
     if session.get('role') != 'admin':
         return redirect(url_for('auth.connexion'))
     
+     # Récupérer les informations de l'utilisateur connecté
+    user_id = session.get('user_id')
+    user = infos_collection.find_one({"_id": ObjectId(user_id)})
+
     # Récupération de tous les étudiants
     recherche = request.form.get("recherche", "").strip().lower() #.lower() pour rendre la recherche insensible à la casse, .strip() pour supprimer les espaces inutiles
     selected_niveau = request.form.get("niveau", "") # request.form.get("niveau", "") pour récupérer la valeur du champ "niveau" du formulaire, si la valeur n'est pas fournie, la valeur par défaut est une chaîne vide ""
@@ -85,7 +95,7 @@ def gerer_etudiants():
                            parcours_list=sorted(parcours_set),
                            selected_niveau=selected_niveau,
                            selected_parcours=selected_parcours,
-                           nb_etudiants=len(etudiants))
+                           nb_etudiants=len(etudiants),user=user)
 
 # Ajouter un étudiant
 @admin_bp.route('/etudiants/ajouter', methods=['GET', 'POST'])
@@ -159,6 +169,10 @@ def matieres():
     niveaux = ["L1", "L2", "L3", "M1", "M2"]
     parcours_list = ["IG", "SR", "GB", "GID", "OCC"]
 
+    # Récupérer les informations de l'utilisateur connecté
+    user_id = session.get('user_id')
+    user = infos_collection.find_one({"_id": ObjectId(user_id)})
+
     # Récupérer tous les professeurs (utilisateurs avec role="enseignant") approuvé
     professeurs = infos_collection.find({"role": "enseignant", "aprouve": True})
     professeurs = list(professeurs)  # Convertir en liste pour l'utiliser dans le template
@@ -172,7 +186,7 @@ def matieres():
         ajouter_matiere(nom, coefficient, professeur, niveau, parcours)
         return redirect(url_for('admin.matieres'))
     toutes_les_matieres = get_all_matieres()
-    return render_template("admin/matieres.html", matieres=toutes_les_matieres, niveaux=niveaux, parcours_list=parcours_list, professeurs=professeurs)
+    return render_template("admin/matieres.html", matieres=toutes_les_matieres, niveaux=niveaux, parcours_list=parcours_list, professeurs=professeurs,user=user)
 
 
 #Suprimer un matieres
@@ -189,6 +203,10 @@ def supprimer_matiere_route(id_matiere):
 def modifier_matiere_route(id_matiere):
     if 'user_email' not in session or session.get('role') != 'admin':
         return redirect(url_for('admin.connexion'))
+    
+      # Récupérer les informations de l'utilisateur connecté
+    user_id = session.get('user_id')
+    user = infos_collection.find_one({"_id": ObjectId(user_id)})
     
     matiere = get_matiere_by_id(id_matiere)
     niveaux = ["L1", "L2", "L3", "M1", "M2"]
@@ -213,7 +231,7 @@ def modifier_matiere_route(id_matiere):
         matiere=matiere,
         niveaux=niveaux,
         parcours_list=parcours_list,
-        professeurs=professeurs
+        professeurs=professeurs,user=user
     )
 
 #Gestion notes
@@ -221,6 +239,10 @@ def modifier_matiere_route(id_matiere):
 def gestion_notes():
     if 'user_email' not in session or session.get('role') != 'admin':
         return redirect(url_for('admin.connexion'))
+
+    # Récupérer les informations de l'utilisateur connecté
+    user_id = session.get('user_id')
+    user = infos_collection.find_one({"_id": ObjectId(user_id)})
 
     matieres = get_all_matieres()
     erreurs = []
@@ -248,7 +270,7 @@ def gestion_notes():
                 except Exception as e:
                     erreurs.append(f"Erreur pour {etudiant['nom']} : {e}")
         return redirect(url_for('admin.gestion_notes'))
-    return render_template("admin/gestion_notes.html", matieres=matieres)
+    return render_template("admin/gestion_notes.html", matieres=matieres,user=user)
 
 #Supprimer note
 @admin_bp.route('/notes/supprimer/<note_id>')
@@ -265,6 +287,10 @@ def voir_moyennes():
     if 'user_email' not in session or session.get('role') != 'admin':
         return redirect(url_for('admin.connexion'))
     
+       # Récupérer les informations de l'utilisateur connecté
+    user_id = session.get('user_id')
+    user = infos_collection.find_one({"_id": ObjectId(user_id)})
+
     recherche = request.form.get("recherche", "").strip().lower()
     filtre_niveau = request.form.get("niveau", "")
     filtre_parcours = request.form.get("parcours", "")
@@ -333,7 +359,7 @@ def voir_moyennes():
         niveaux=niveaux,
         parcours_list=parcours_list,
         selected_niveau=filtre_niveau,
-        selected_parcours=filtre_parcours
+        selected_parcours=filtre_parcours ,user=user
     )
 
 #Affichage note par etudiant
@@ -360,6 +386,10 @@ def detail_notes(numero_etudiant):
     if 'user_email' not in session or session.get('role') != 'admin':
         return redirect(url_for('admin.connexion'))
 
+   # Récupérer les informations de l'utilisateur connecté
+    user_id = session.get('user_id')
+    user = infos_collection.find_one({"_id": ObjectId(user_id)})
+
     etudiant = get_nom_etudiant()
     matieres = get_all_matieres()
     notes = get_notes_etudiant(numero_etudiant)
@@ -375,8 +405,10 @@ def detail_notes(numero_etudiant):
             "id_note": str(note_matiere['_id']) if note_matiere else None
         })
 
-    return render_template("admin/detail_notes.html", etudiant=etudiant, details=details)
+    return render_template("admin/detail_notes.html", etudiant=etudiant, details=details,user=user)
 
+# Modifier note
+@admin_bp.route("/modifier_note/<note_id>", methods=["GET", "POST"])
 # Modifier note
 @admin_bp.route("/modifier_note/<note_id>", methods=["GET", "POST"])
 def modifier_note(note_id):
@@ -403,14 +435,15 @@ def modifier_note(note_id):
         flash("Note mise à jour avec succès ✅", "success")
         return redirect(url_for("admin.detail_notes", numero_etudiant=numero_etudiant))
 
-    return render_template("admin/modifier_note.html", note=note_doc, user=user)
-
 #Publication de resultat
 @admin_bp.route('/publier_resultats', methods=['GET', 'POST'])
 def publier_resultats():
     if 'user_email' not in session or session.get('role') != 'admin':
         return redirect(url_for('admin.connexion'))
     
+    user_id = session.get('user_id')
+    user = infos_collection.find_one({"_id": ObjectId(user_id)})
+
     parcours_selectionne = request.form.get('parcours')
     niveau_selectionne = request.form.get('niveau')
     confirmer = request.form.get('confirmer')
@@ -457,7 +490,7 @@ def publier_resultats():
     return render_template("admin/publier_resultats.html",
                            etudiants=etudiants,
                            parcours_selectionne=parcours_selectionne,
-                           niveau_selectionne=niveau_selectionne)
+                           niveau_selectionne=niveau_selectionne,user=user)
 
 # Voir la liste d’attente
 @admin_bp.route('/admin/attente')
@@ -465,9 +498,12 @@ def liste_attente():
     if 'user_email' not in session or session.get('role') != 'admin':
         return redirect(url_for('admin.connexion'))
     
+    # Récupérer les informations de l'utilisateur connecté
+    user_id = session.get('user_id')
+    user = infos_collection.find_one({"_id": ObjectId(user_id)})
+    
     utilisateurs_en_attente = list(infos_collection.find({'approuve': False}))
-    return render_template('admin/liste_attente.html', utilisateurs_en_attente=utilisateurs_en_attente)
-
+    return render_template('admin/liste_attente.html', utilisateurs_en_attente=utilisateurs_en_attente, user=user)
 # Voir un profil
 @admin_bp.route('/admin/profil/<user_id>')
 def consulter_profil(user_id):
