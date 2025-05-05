@@ -194,7 +194,7 @@ def gestion_matieres():
                           niveaux=niveaux, 
                           parcours_list=parcours_list)
 
-                          @admin_bp.route('/matieres/modifier/<id_matiere>', methods=['GET', 'POST'])
+@admin_bp.route('/matieres/modifier/<id_matiere>', methods=['GET', 'POST'])
 def modifier_matiere_route(id_matiere):
     # Récupérer la matière à modifier
     matiere = matieres_collection.find_one({"_id": ObjectId(id_matiere)})
@@ -234,12 +234,12 @@ def modifier_matiere_route(id_matiere):
                           niveaux=niveaux, 
                           parcours_list=parcours_list)
 
-@admin_bp.route('/matieres/supprimer/<id_matiere>')
-def supprimer_matiere_route(id_matiere):
-    # Supprimer la matière
-    matieres_collection.delete_one({"_id": ObjectId(id_matiere)})
-    flash("Matière supprimée avec succès!", "success")
-    return redirect(url_for('admin.gestion_matieres'))
+# @admin_bp.route('/matieres/supprimer/<id_matiere>')
+# def supprimer_matiere_route(id_matiere):
+#     # Supprimer la matière
+#     matieres_collection.delete_one({"_id": ObjectId(id_matiere)})
+#     flash("Matière supprimée avec succès!", "success")
+#     return redirect(url_for('admin.gestion_matieres'))
 
 @admin_bp.route('/matieres', methods=['GET', 'POST'])
 def matieres():
@@ -279,40 +279,40 @@ def supprimer_matiere_route(id_matiere):
     return redirect(url_for('admin.matieres'))
 
 #Modifier un matiere
-@admin_bp.route('/modifier_matiere/<id_matiere>', methods=['GET', 'POST'])
-def modifier_matiere_route(id_matiere):
-    if 'user_email' not in session or session.get('role') != 'admin':
-        return redirect(url_for('admin.connexion'))
+# @admin_bp.route('/modifier_matiere/<id_matiere>', methods=['GET', 'POST'])
+# def modifier_matiere_route(id_matiere):
+#     if 'user_email' not in session or session.get('role') != 'admin':
+#         return redirect(url_for('admin.connexion'))
     
-      # Récupérer les informations de l'utilisateur connecté
-    user_id = session.get('user_id')
-    user = infos_collection.find_one({"_id": ObjectId(user_id)})
+#       # Récupérer les informations de l'utilisateur connecté
+#     user_id = session.get('user_id')
+#     user = infos_collection.find_one({"_id": ObjectId(user_id)})
     
-    matiere = get_matiere_by_id(id_matiere)
-    niveaux = ["L1", "L2", "L3", "M1", "M2"]
-    parcours_list = ["IG", "SR", "GB", "GID", "OCC"]
+#     matiere = get_matiere_by_id(id_matiere)
+#     niveaux = ["L1", "L2", "L3", "M1", "M2"]
+#     parcours_list = ["IG", "SR", "GB", "GID", "OCC"]
 
-    # Récupérer les enseignants apprové
-    professeurs = infos_collection.find({"role": "enseignant", 'aprouve': True})
-    professeurs = list(professeurs)
+#     # Récupérer les enseignants apprové
+#     professeurs = infos_collection.find({"role": "enseignant", 'aprouve': True})
+#     professeurs = list(professeurs)
 
-    if request.method == 'POST':
-        nom = request.form['nom']
-        coefficient = float(request.form['coefficient'])
-        professeur = request.form['professeur']
-        niveau = request.form['niveau']
-        parcours = request.form['parcours']
+#     if request.method == 'POST':
+#         nom = request.form['nom']
+#         coefficient = float(request.form['coefficient'])
+#         professeur = request.form['professeur']
+#         niveau = request.form['niveau']
+#         parcours = request.form['parcours']
 
-        modifier_matiere(id_matiere, nom, coefficient, professeur, niveau, parcours)
-        return redirect(url_for('admin.matieres'))
+#         modifier_matiere(id_matiere, nom, coefficient, professeur, niveau, parcours)
+#         return redirect(url_for('admin.matieres'))
 
-    return render_template(
-        "admin/modifier_matiere.html",
-        matiere=matiere,
-        niveaux=niveaux,
-        parcours_list=parcours_list,
-        professeurs=professeurs,user=user
-    )
+#     return render_template(
+#         "admin/modifier_matiere.html",
+#         matiere=matiere,
+#         niveaux=niveaux,
+#         parcours_list=parcours_list,
+#         professeurs=professeurs,user=user
+#     )
 
 #Gestion notes
 @admin_bp.route('/notes', methods=['GET', 'POST'])
