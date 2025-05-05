@@ -4,10 +4,9 @@ from models.user_model import get_all_students, create_user, delete_user_by_id
 from bson.objectid import ObjectId
 from config.db import infos_collection, notes_collection, matieres_collection
 from models.notes_model import ajouter_note, get_toutes_notes, supprimer_note, calculer_moyenne_etudiant, get_notes_etudiant
-from models.user_model import get_all_students, envoyer_email_resultat_session, envoyer_email, generate_password_hash
+from models.user_model import get_all_enseignants,get_all_students, envoyer_email_resultat_session, envoyer_email, generate_password_hash
 from models.matiere_model import ajouter_matiere, get_all_matieres, supprimer_matiere, get_matiere_by_id, modifier_matiere
 from flask import render_template
-
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
