@@ -160,6 +160,40 @@ def modifier_etudiant(email):
 '''
 
 #Gestion des matières
+
+@admin_bp.route('/matieres', methods=['GET', 'POST'])
+def gestion_matieres():
+    # Récupérer tous les enseignants pour la liste déroulante
+    professeurs = get_all_enseignants()
+    
+    # Récupérer toutes les matières existantes
+    matieres = list(matieres_collection.find())
+    
+    # Définir les niveaux et parcours disponibles
+    niveaux = ["L1", "L2", "L3", "M1", "M2"]
+    parcours_list = ["Informatique", "Mathématiques", "Physique", "Chimie", "Biologie"]
+    
+    # Traitement du formulaire d'ajout
+    if request.method == 'POST':
+        nouvelle_matiere = {
+            "nom": request.form.get('nom'),
+            "coefficient": int(request.form.get('coefficient')),
+            "professeur": request.form.get('professeur'),
+            "niveau": request.form.get('niveau'),
+            "parcours": request.form.get('parcours')
+        }
+        
+        # Insérer la nouvelle matière
+        matieres_collection.insert_one(nouvelle_matiere)
+        flash("Matière ajoutée avec succès!", "success")
+        return redirect(url_for('admin.gestion_matieres'))
+    
+    return render_template('admin/matieres.html', 
+                          matieres=matieres, 
+                          professeurs=professeurs, 
+                          niveaux=niveaux, 
+                          parcours_list=parcours_list)
+
 @admin_bp.route('/matieres', methods=['GET', 'POST'])
 def matieres():
     if 'user_email' not in session or session.get('role') != 'admin':
