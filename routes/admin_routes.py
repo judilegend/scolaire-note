@@ -194,6 +194,53 @@ def gestion_matieres():
                           niveaux=niveaux, 
                           parcours_list=parcours_list)
 
+                          @admin_bp.route('/matieres/modifier/<id_matiere>', methods=['GET', 'POST'])
+def modifier_matiere_route(id_matiere):
+    # Récupérer la matière à modifier
+    matiere = matieres_collection.find_one({"_id": ObjectId(id_matiere)})
+    if not matiere:
+        flash("Matière introuvable", "error")
+        return redirect(url_for('admin.gestion_matieres'))
+    
+    # Récupérer tous les enseignants pour la liste déroulante
+    professeurs = get_all_enseignants()
+    
+    # Définir les niveaux et parcours disponibles
+    niveaux = ["L1", "L2", "L3", "M1", "M2"]
+    parcours_list = ["Informatique", "Mathématiques", "Physique", "Chimie", "Biologie"]
+    
+    # Traitement du formulaire de modification
+    if request.method == 'POST':
+        matiere_modifiee = {
+            "nom": request.form.get('nom'),
+            "coefficient": int(request.form.get('coefficient')),
+            "professeur": request.form.get('professeur'),
+            "niveau": request.form.get('niveau'),
+            "parcours": request.form.get('parcours')
+        }
+        
+        # Mettre à jour la matière
+        matieres_collection.update_one(
+            {"_id": ObjectId(id_matiere)},
+            {"$set": matiere_modifiee}
+        )
+        
+        flash("Matière modifiée avec succès!", "success")
+        return redirect(url_for('admin.gestion_matieres'))
+    
+    return render_template('admin/modifier_matiere.html', 
+                          matiere=matiere, 
+                          professeurs=professeurs, 
+                          niveaux=niveaux, 
+                          parcours_list=parcours_list)
+
+@admin_bp.route('/matieres/supprimer/<id_matiere>')
+def supprimer_matiere_route(id_matiere):
+    # Supprimer la matière
+    matieres_collection.delete_one({"_id": ObjectId(id_matiere)})
+    flash("Matière supprimée avec succès!", "success")
+    return redirect(url_for('admin.gestion_matieres'))
+
 @admin_bp.route('/matieres', methods=['GET', 'POST'])
 def matieres():
     if 'user_email' not in session or session.get('role') != 'admin':
