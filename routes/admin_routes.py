@@ -248,18 +248,36 @@ def gestion_notes():
     erreurs = []
     matiere_selectionnee = None
     etudiants = []
+    notes = {}  # Initialize empty notes dictionary
 
     if request.method == 'POST':
         id_matiere = request.form['matiere_id']
         matiere_selectionnee = get_matiere_by_id(id_matiere)
 
-        # Étape 1 : L’admin a sélectionné une matière → on affiche les étudiants
-        if 'note_' not in ''.join(request.form.keys()): # keys() pour obtenir les noms des clés du formulaire
+        # Étape 1 : L'admin a sélectionné une matière → on affiche les étudiants
+        if 'note_' not in ''.join(request.form.keys()):
             if matiere_selectionnee:
                 etudiants = get_students_by_parcours_niveau(matiere_selectionnee['parcours'], matiere_selectionnee['niveau'])
-            return render_template("admin/gestion_notes.html", matieres=matieres, matiere_selectionnee=matiere_selectionnee, etudiants=etudiants)
+                
+                # Récupérer les notes existantes pour cette matière
+                existing_notes = notes_collection.find({
+                    'id_matiere': ObjectId(id_matiere)
+                })
+                
+                # Créer un dictionnaire avec les notes existantes
+                for note in existing_notes:
+                    student_id = note.get('id_etudiant')
+                    if student_id:
+                        notes[student_id] = note.get('note', '')
+            
+            return render_template("admin/gestion_notes.html", 
+                                  matieres=matieres, 
+                                  matiere_selectionnee=matiere_selectionnee, 
+                                  etudiants=etudiants,
+                                  notes=notes,
+                                  user=user)
 
-        # Étape 2 : L’admin a saisi des notes → on les enregistre
+        # Étape 2 : L'admin a saisi des notes → on les enregistre
         etudiants = get_students_by_parcours_niveau(matiere_selectionnee['parcours'], matiere_selectionnee['niveau'])
         for etudiant in etudiants:
             note_key = f"note_{etudiant['_id']}"
@@ -270,7 +288,11 @@ def gestion_notes():
                 except Exception as e:
                     erreurs.append(f"Erreur pour {etudiant['nom']} : {e}")
         return redirect(url_for('admin.gestion_notes'))
-    return render_template("admin/gestion_notes.html", matieres=matieres,user=user)
+    
+    return render_template("admin/gestion_notes.html", 
+                          matieres=matieres,
+                          notes={},  # Pass empty notes dictionary
+                          user=user)
 
 #Supprimer note
 @admin_bp.route('/notes/supprimer/<note_id>')

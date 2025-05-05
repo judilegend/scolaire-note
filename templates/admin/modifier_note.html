@@ -1,30 +1,96 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Profil Utilisateur</title>
-</head>
-<body>
-    <h2>Profil de {{ user.role | capitalize }}</h2>
+{% extends "admin/layout.html" %} {% block title %}Modifier une Note{% endblock
+%} {% block page_title %}Modifier une Note{% endblock %} {% block content %}
+<div class="card">
+  <h3><i class="fas fa-edit"></i> Modifier la note</h3>
 
-    <ul>
-        <li><strong>Email :</strong> {{ user.email }}</li>
-        <li><strong>Rôle :</strong> {{ user.role }}</li>
+  <div class="student-info">
+    <div class="info-item">
+      <span class="info-label"><i class="fas fa-user"></i> Étudiant :</span>
+      <span class="info-value">{{ note.etudiant_nom }}</span>
+    </div>
+    <div class="info-item">
+      <span class="info-label"><i class="fas fa-id-card"></i> Numéro :</span>
+      <span class="info-value">{{ note.etudiant_numero }}</span>
+    </div>
+    <div class="info-item">
+      <span class="info-label"><i class="fas fa-book"></i> Matière :</span>
+      <span class="info-value">{{ note.matiere_nom }}</span>
+    </div>
+    <div class="info-item">
+      <span class="info-label"
+        ><i class="fas fa-balance-scale"></i> Coefficient :</span
+      >
+      <span class="info-value">{{ note.coefficient }}</span>
+    </div>
+  </div>
 
-        {% if user.role == 'etudiant' %}
-            <li><strong>Nom :</strong> {{ user.nom }}</li>
-            <li><strong>Numéro :</strong> {{ user.numero }}</li>
-            <li><strong>Parcours :</strong> {{ user.parcours }}</li>
-            <li><strong>Niveau :</strong> {{ user.niveau }}</li>
+  <form method="POST">
+    <div class="form-group">
+      <label><i class="fas fa-star"></i> Note :</label>
+      <input
+        type="number"
+        name="note"
+        min="0"
+        max="20"
+        step="0.5"
+        value="{{ note.note }}"
+        required
+      />
+      <small class="form-text">Entrez une note entre 0 et 20.</small>
+    </div>
 
-        {% elif user.role == 'enseignant' %}
-            <li><strong>Nom :</strong> {{ user.nom }}</li>
-            <li><strong>Spécialité :</strong> {{ user.matiere }}</li>
-        {% elif user.role == 'admin' %}
-            <li><strong>Nom :</strong> {{ user.nom }}</li>
-            <li><strong>Service :</strong> {{ user.identifiant }}</li>
-        {% endif %}
-    </ul>
-    <a href="{{ url_for('admin.voir_moyennes') }}">⬅ Retour à la moyenne</a>
-</body>
-</html>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">
+        <i class="fas fa-save"></i> Enregistrer
+      </button>
+      <a
+        href="{{ url_for('admin.detail_notes', numero_etudiant=note.etudiant_numero) }}"
+        class="btn btn-secondary"
+      >
+        <i class="fas fa-arrow-left"></i> Retour
+      </a>
+    </div>
+  </form>
+</div>
+
+<style>
+  .student-info {
+    background-color: rgba(46, 138, 103, 0.1);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 30px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+  }
+
+  .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .info-label {
+    font-size: 0.9rem;
+    color: var(--text-light);
+  }
+
+  .info-value {
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+
+  .form-text {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.85rem;
+    color: var(--text-light);
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+  }
+</style>
+{% endblock %}

@@ -1,115 +1,69 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Modifier une Matière</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f5;
-            padding: 40px;
-            color: #333;
-        }
+{% extends "admin/layout.html" %}
 
-        h2 {
-            color: #2e8a67;
-            text-align: center;
-        }
+{% block title %}Modifier une Matière{% endblock %}
 
-        form {
-            max-width: 500px;
-            margin: auto;
-            background-color: #fff;
-            padding: 20px 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
+{% block page_title %}Modifier une Matière{% endblock %}
 
-        label {
-            font-weight: bold;
-            display: block;
-            margin-top: 15px;
-        }
-
-        input[type="text"],
-        input[type="number"],
-        select {
-            width: 100%;
-            padding: 8px 10px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-        }
-
-        button {
-            margin-top: 20px;
-            background-color: #2e8a67;
-            color: white;
-            padding: 10px 16px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #28a776;
-        }
-
-        .back-link {
-            text-align: center;
-            margin-top: 25px;
-        }
-
-        .back-link a {
-            text-decoration: none;
-            color: #2e8a67;
-            font-weight: bold;
-        }
-
-        .back-link a:hover {
-            text-decoration: underline;
-        }
-    </style>
-</head>
-<body>
-
-    <h2>✏️ Modifier la matière</h2>
-
-    <form method="POST">
-        <label>Nom :</label>
-        <input type="text" name="nom" value="{{ matiere.nom }}" required>
-
-        <label>Coefficient :</label>
-        <input type="number" step="1" name="coefficient" value="{{ matiere.coefficient }}" required>
-
-        <label>Professeur :</label>
-        <select name="professeur" required>
-            <option value="">-- Choisir un professeur --</option>
-            {% for prof in professeurs %}
-                <option value="{{ prof.nom }}" {% if prof.nom == matiere.professeur %}selected{% endif %}>{{ prof.nom }}</option>
-            {% endfor %}
-        </select>
-
-        <label>Niveau :</label>
-        <select name="niveau" required>
-            {% for niv in niveaux %}
-                <option value="{{ niv }}" {% if matiere.niveau == niv %}selected{% endif %}>{{ niv }}</option>
-            {% endfor %}
-        </select>
-
-        <label>Parcours :</label>
-        <select name="parcours" required>
-            {% for p in parcours_list %}
-                <option value="{{ p }}" {% if matiere.parcours == p %}selected{% endif %}>{{ p }}</option>
-            {% endfor %}
-        </select>
-
-        <button type="submit">✅ Enregistrer les modifications</button>
-    </form>
-
-    <div class="back-link">
-        <a href="{{ url_for('admin.matieres') }}">⬅️ Retour à la liste des matières</a>
+{% block content %}
+<div class="card">
+  <h2><i class="fas fa-edit"></i> Modifier la matière</h2>
+  
+  <form method="POST">
+    <div class="form-group">
+      <label><i class="fas fa-book"></i> Nom :</label>
+      <input type="text" name="nom" value="{{ matiere.nom }}" required>
     </div>
 
-</body>
-</html>
+    <div class="form-group">
+      <label><i class="fas fa-balance-scale"></i> Coefficient :</label>
+      <input type="number" step="1" name="coefficient" value
+      <input type="number" step="1" name="coefficient" value="{{ matiere.coefficient }}" required>
+    </div>
+
+    <div class="form-group">
+      <label><i class="fas fa-chalkboard-teacher"></i> Professeur :</label>
+      <select name="professeur" required>
+        <option value="">-- Choisir un professeur --</option>
+        {% for prof in professeurs %}
+          <option value="{{ prof.nom }}" {% if prof.nom == matiere.professeur %}selected{% endif %}>{{ prof.nom }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label><i class="fas fa-graduation-cap"></i> Niveau :</label>
+      <select name="niveau" required>
+        {% for niv in niveaux %}
+          <option value="{{ niv }}" {% if matiere.niveau == niv %}selected{% endif %}>{{ niv }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label><i class="fas fa-bookmark"></i> Parcours :</label>
+      <select name="parcours" required>
+        {% for p in parcours_list %}
+          <option value="{{ p }}" {% if matiere.parcours == p %}selected{% endif %}>{{ p }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">
+        <i class="fas fa-save"></i> Enregistrer les modifications
+      </button>
+      <a href="{{ url_for('admin.matieres') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Retour
+      </a>
+    </div>
+  </form>
+</div>
+
+<style>
+  .form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+  }
+</style>
+{% endblock %}

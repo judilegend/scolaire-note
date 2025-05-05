@@ -1,275 +1,19 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tableau des Moyennes</title>
-<style>
-/* Style de base pour le corps de la page */
-body {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(to right, #e0f7fa, #ffffff);
-  margin: 0;
-  padding: 30px;
-  color: #333;
-  line-height: 1.6;
-}
+{% extends "admin/layout.html" %}
 
-/* Conteneur principal pour centrer le contenu */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  background-color: white;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-}
+{% block title %}Tableau des Moyennes{% endblock %}
 
-/* Style du titre principal */
-h1 {
-  color: #2c3e50;
-  margin-top: 0;
-  margin-bottom: 25px;
-  font-size: 28px;
-  text-align: center;
-  border-bottom: 2px solid #e0f7fa;
-  padding-bottom: 15px;
-}
+{% block page_title %}Tableau des Moyennes{% endblock %}
 
-/* Style du formulaire de recherche et filtrage */
-.search-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  margin-bottom: 25px;
-  background-color: #f8f9fa;
-  padding: 20px;
-  border-radius: 8px;
-}
-
-.search-input {
-  flex: 1;
-  min-width: 200px;
-}
-
-input[type="text"], select {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 16px;
-  color: #333;
-  background-color: white;
-  font-family: inherit;
-}
-
-input[type="text"]:focus, select:focus {
-  outline: none;
-  border-color: #2e8a67;
-  box-shadow: 0 0 0 2px rgba(46, 138, 103, 0.2);
-}
-
-/* Style des boutons */
-button {
-  background-color: #2e8a67;
-  color: white;
-  border: none;
-  padding: 12px 25px;
-  border-radius: 6px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-button:hover {
-  background-color: #28a776;
-}
-
-/* Bouton d'impression PDF */
-.btn-primary {
-  background-color: #3498db;
-  padding: 8px 15px;
-  font-size: 14px;
-  margin-left: 10px;
-}
-
-.btn-primary:hover {
-  background-color: #2980b9;
-}
-
-/* Information et actions */
-.info-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-  gap: 15px;
-}
-
-.stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-}
-
-.stat-card {
-  background-color: #f0f0f0;
-  padding: 8px 15px;
-  border-radius: 20px;
-  font-weight: 500;
-  color: #2c3e50;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.stat-number {
-  font-weight: 700;
-  color: #2e8a67;
-}
-
-.action-links {
-  display: flex;
-  gap: 15px;
-  flex-wrap: wrap;
-}
-
-.action-link {
-  color: #2e8a67;
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.3s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.action-link:hover {
-  color: #28a776;
-  text-decoration: underline;
-}
-
-/* Style du tableau des moyennes */
-.grades-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 20px 0;
-  background-color: white;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.grades-table thead {
-  background-color: #2e8a67;
-  color: white;
-}
-
-.grades-table th, .grades-table td {
-  padding: 15px;
-  text-align: left;
-  border-bottom: 1px solid #eee;
-}
-
-.grades-table tbody tr:hover {
-  background-color: #f9f9f9;
-}
-
-/* Style pour les différentes recommandations */
-.recommandation {
-  padding: 5px 10px;
-  border-radius: 15px;
-  font-weight: 500;
-  display: inline-block;
-}
-
-.recommandation-admis {
-  background-color: #d4edda;
-  color: #155724;
-}
-
-.recommandation-redouble {
-  background-color: #f8d7da;
-  color: #721c24;
-}
-
-.recommandation-rattrappage {
-  background-color: #fff3cd;
-  color: #856404;
-}
-
-/* Styles pour les liens d'action dans le tableau */
-.detail-link {
-  color: #2e8a67;
-  margin-right: 10px;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.detail-link:hover {
-  text-decoration: underline;
-}
-
-/* Rang des étudiants */
-.rang {
-  font-weight: bold;
-  text-align: center;
-}
-
-.rang-top {
-  color: #e74c3c;
-}
-
-/* Lien de retour */
-.back-link {
-  display: inline-block;
-  margin-top: 20px;
-  color: #2c3e50;
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.3s ease;
-}
-
-.back-link:hover {
-  color: #2e8a67;
-}
-
-/* Style pour les appareils mobiles */
-@media (max-width: 992px) {
-  .container {
-    padding: 20px;
-  }
-  
-  .search-form {
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .grades-table {
-    display: block;
-    overflow-x: auto;
-  }
-  
-  .info-actions {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
-</style>
-</head>
-<body>
-<div class="container">
-  <h1>Tableau des Moyennes</h1>
-  
-  <!-- Formulaire de recherche et filtrage -->
+{% block content %}
+<!-- Formulaire de recherche et filtrage -->
+<div class="card">
   <form method="POST" class="search-form">
     <div class="search-input">
+      <label><i class="fas fa-search"></i> Recherche</label>
       <input type="text" name="recherche" placeholder="Rechercher par nom ou numéro" value="{{ recherche }}">
     </div>
     <div class="search-input">
+      <label><i class="fas fa-graduation-cap"></i> Niveau</label>
       <select name="niveau">
         <option value="">-- Niveau --</option>
         {% for niv in niveaux %}
@@ -278,6 +22,7 @@ button:hover {
       </select>
     </div>
     <div class="search-input">
+      <label><i class="fas fa-bookmark"></i> Parcours</label>
       <select name="parcours">
         <option value="">-- Parcours --</option>
         {% for p in parcours_list %}
@@ -285,85 +30,160 @@ button:hover {
         {% endfor %}
       </select>
     </div>
-    <button type="submit">Filtrer</button>
+    <button type="submit" class="btn btn-primary">
+      <i class="fas fa-filter"></i> Filtrer
+    </button>
   </form>
-  
-  <!-- Informations et actions -->
-  <div class="info-actions">
-    <div class="stats">
-      <div class="stat-card">
-        <span>📊 Étudiants affichés :</span>
-        <span class="stat-number">{{ nb_etudiants }}</span>
-      </div>
-      <div class="stat-card">
-        <span>📚 Total des étudiants :</span>
-        <span class="stat-number">{{ etudiants|length }}</span>
-      </div>
+</div>
+
+<!-- Statistiques rapides -->
+<div class="stats-container">
+  <div class="stat-card">
+    <div class="stat-icon">
+      <i class="fas fa-users"></i>
     </div>
-    <div class="action-links">
-      <a href="{{ url_for('admin.liste_etudiants') }}" class="action-link">👥 Liste des étudiants</a>
-      <a href="{{ url_for('admin.voir_moyennes') }}" class="action-link">🔄 Restaurer la liste complète</a>
+    <div class="stat-info">
+      <h4>Étudiants affichés</h4>
+      <p>{{ nb_etudiants }}</p>
     </div>
   </div>
-  
-  <!-- Tableau des moyennes -->
-  <table class="grades-table">
-    <thead>
-      <tr>
-        <th>Rang</th>
-        <th>Numéro</th>
-        <th>Nom</th>
-        <th>Email</th>
-        <th>Niveau</th>
-        <th>Parcours</th>
-        <th>Moyenne</th>
-        <th>Recommandation</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for etudiant in tableau %}
-      <tr>
-        <td class="rang {% if etudiant.rang <= 3 %}rang-top{% endif %}">{{ etudiant.rang }}</td>
-        <td>{{ etudiant.numero }}</td>
-        <td>{{ etudiant.nom }}</td>
-        <td>{{ etudiant.email }}</td>
-        <td>{{ etudiant.niveau }}</td>
-        <td>{{ etudiant.parcours }}</td>
-        <td>
-          {% if etudiant.moyenne != 0 %}
-            <strong>{{ "%.2f"|format(etudiant.moyenne) }}</strong>
-          {% else %}
-            -
-          {% endif %}
-        </td>
-        <td>
-          {% if etudiant.moyenne != 0 %}
-            {% if etudiant.recommandation == "Admis" %}
-              <span class="recommandation recommandation-admis">{{ etudiant.recommandation }}</span>
-            {% elif etudiant.recommandation == "Redouble" %}
-              <span class="recommandation recommandation-redouble">{{ etudiant.recommandation }}</span>
-            {% else %}
-              <span class="recommandation recommandation-rattrappage">{{ etudiant.recommandation }}</span>
-            {% endif %}
-          {% else %}
-            -
-          {% endif %}
-        </td>
-        <td>
-          
-          <a href="{{ url_for('admin.detail_notes', numero_etudiant=etudiant['numero']) }}" class="detail-link">🔍 Détail</a>
-          <a href="{{ url_for('admin.generer_pdf', etudiant_id=etudiant['_id']) }}" target="_blank">
-            <!--button class="btn btn-primary">📄 PDF</-button>-->
-          </a>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  
-  <!-- Lien de retour au tableau de bord -->
-  <a href="{{ url_for('admin.dashboard') }}" class="back-link">⬅️ Retour au tableau de bord</a>
+
+  <div class="stat-card">
+    <div class="stat-icon">
+      <i class="fas fa-user-graduate"></i>
+    </div>
+    <div class="stat-info">
+      <h4>Total des étudiants</h4>
+      <p>{{ etudiants|length }}</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon">
+      <i class="fas fa-check-circle"></i>
+    </div>
+    <div class="stat-info">
+      <h4>Admis</h4>
+      <p>{{ nb_admis }}</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon">
+      <i class="fas fa-times-circle"></i>
+    </div>
+    <div class="stat-info">
+      <h4>Non admis</h4>
+      <p>{{ nb_non_admis }}</p>
+    </div>
+  </div>
 </div>
-</body>
-</html>
+
+<!-- Actions rapides -->
+<div class="action-links">
+  <a href="{{ url_for('admin.liste_etudiants') }}" class="action-link">
+    <i class="fas fa-list"></i> Liste des étudiants
+  </a>
+  <a href="{{ url_for('admin.voir_moyennes') }}" class="action-link">
+    <i class="fas fa-sync"></i> Restaurer la liste complète
+  </a>
+  <a href="{{ url_for('admin.publier_resultats') }}" class="action-link">
+    <i class="fas fa-bullhorn"></i> Publier les résultats
+  </a>
+</div>
+
+<!-- Tableau des moyennes -->
+<div class="card">
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th><i class="fas fa-trophy"></i> Rang</th>
+          <th><i class="fas fa-id-card"></i> Numéro</th>
+          <th><i class="fas fa-user"></i> Nom</th>
+          <th><i class="fas fa-envelope"></i> Email</th>
+          <th><i class="fas fa-graduation-cap"></i> Niveau</th>
+          <th><i class="fas fa-bookmark"></i> Parcours</th>
+          <th><i class="fas fa-star"></i> Moyenne</th>
+          <th><i class="fas fa-check-double"></i> Recommandation</th>
+          <th><i class="fas fa-cogs"></i> Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for etudiant in tableau %}
+        <tr>
+          <td class="rang {% if etudiant.rang <= 3 %}rang-top{% endif %}">{{ etudiant.rang }}</td>
+          <td>{{ etudiant.numero }}</td>
+          <td>{{ etudiant.nom }}</td>
+          <td>{{ etudiant.email }}</td>
+          <td>{{ etudiant.niveau }}</td>
+          <td>{{ etudiant.parcours }}</td>
+          <td>
+            {% if etudiant.moyenne != 0 %}
+              <strong>{{ "%.2f"|format(etudiant.moyenne) }}</strong>
+            {% else %}
+              -
+            {% endif %}
+          </td>
+          <td>
+            {% if etudiant.moyenne != 0 %}
+              {% if etudiant.recommandation == "Admis" %}
+                <span class="badge badge-success">{{ etudiant.recommandation }}</span>
+              {% elif etudiant.recommandation == "Redouble" %}
+                <span class="badge badge-danger">{{ etudiant.recommandation }}</span>
+              {% else %}
+                <span class="badge badge-warning">{{ etudiant.recommandation }}</span>
+              {% endif %}
+            {% else %}
+              -
+            {% endif %}
+          </td>
+          <td>
+            <a href="{{ url_for('admin.detail_notes', numero_etudiant=etudiant['numero']) }}" class="btn btn-sm btn-primary">
+              <i class="fas fa-eye"></i> Détail
+            </a>
+            <!-- <a href="{{ url_for('student.generer_pdf', etudiant_id=etudiant['_id']) }}" target="_blank" class="btn btn-sm btn-secondary">
+              <i class="fas fa-file-pdf"></i> PDF
+            </a> -->
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<style>
+  .rang {
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .rang-top {
+    color: #e74c3c;
+  }
+  
+  .badge {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+  
+  .badge-success {
+    background-color: rgba(46, 138, 103, 0.15);
+    color: var(--primary-color);
+  }
+  
+  .badge-warning {
+    background-color: rgba(255, 193, 7, 0.15);
+    color: #d39e00;
+  }
+  
+  .badge-danger {
+    background-color: rgba(231, 76, 60, 0.15);
+    color: var(--accent-color);
+  }
+</style>
+{% endblock %}
