@@ -205,6 +205,14 @@ def gestion_matieres():
 
 @admin_bp.route('/matieres/modifier/<id_matiere>', methods=['GET', 'POST'])
 def modifier_matiere_route(id_matiere):
+       # Vérifier si l'utilisateur est connecté et est un admin
+    if session.get('role') != 'admin':
+        return redirect(url_for('auth.connexion'))
+    
+    # Récupérer les informations de l'utilisateur connecté
+    user_id = session.get('user_id')
+    user = infos_collection.find_one({"_id": ObjectId(user_id)})
+    
     # Récupérer la matière à modifier
     matiere = matieres_collection.find_one({"_id": ObjectId(id_matiere)})
     if not matiere:
@@ -241,7 +249,7 @@ def modifier_matiere_route(id_matiere):
                           matiere=matiere, 
                           professeurs=professeurs, 
                           niveaux=niveaux, 
-                          parcours_list=parcours_list)
+                          parcours_list=parcours_list,user=user)
 
 # @admin_bp.route('/matieres/supprimer/<id_matiere>')
 # def supprimer_matiere_route(id_matiere):
