@@ -19,6 +19,12 @@ load_dotenv()
 def get_nom_etudiant():
     return list(infos_collection.find())
 
+#recuperer les listes de enseignant
+def get_all_enseignants():
+    """Récupère tous les enseignants approuvés dans le système"""
+    return list(infos_collection.find({'role': 'enseignant', 'approuve': True}))
+
+
 # Trouver un utilisateur par son nom et mot de passe
 def trouver_utilisateur_par_email_et_mdp(email, mot_de_passe):
     utilisateur = infos_collection.find_one({'email': email})
