@@ -163,7 +163,16 @@ def modifier_etudiant(email):
 
 @admin_bp.route('/matieres', methods=['GET', 'POST'])
 def gestion_matieres():
+
+    # Vérifier si l'utilisateur est connecté et est un admin
+    if session.get('role') != 'admin':
+        return redirect(url_for('auth.connexion'))
+    
+    # Récupérer les informations de l'utilisateur connecté
+    user_id = session.get('user_id')
+    user = infos_collection.find_one({"_id": ObjectId(user_id)})
     # Récupérer tous les enseignants pour la liste déroulante
+
     professeurs = get_all_enseignants()
     
     # Récupérer toutes les matières existantes
@@ -192,7 +201,7 @@ def gestion_matieres():
                           matieres=matieres, 
                           professeurs=professeurs, 
                           niveaux=niveaux, 
-                          parcours_list=parcours_list)
+                          parcours_list=parcours_list ,user=user)
 
 @admin_bp.route('/matieres/modifier/<id_matiere>', methods=['GET', 'POST'])
 def modifier_matiere_route(id_matiere):
