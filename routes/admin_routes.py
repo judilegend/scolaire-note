@@ -599,6 +599,10 @@ def publier_resultats():
     user_id = session.get('user_id')
     user = infos_collection.find_one({"_id": ObjectId(user_id)})
 
+    # Définir les niveaux et parcours disponibles
+    niveaux = ["L1", "L2", "L3", "M1", "M2"]
+    parcours_list = ["GB", "ASR", "GID", "OCC", "MDI", "IG"]
+
     parcours_selectionne = request.form.get('parcours')
     niveau_selectionne = request.form.get('niveau')
     confirmer = request.form.get('confirmer')
@@ -645,7 +649,10 @@ def publier_resultats():
     return render_template("admin/publier_resultats.html",
                            etudiants=etudiants,
                            parcours_selectionne=parcours_selectionne,
-                           niveau_selectionne=niveau_selectionne,user=user)
+                           niveau_selectionne=niveau_selectionne,
+                           parcours_list=parcours_list,
+                           niveaux=niveaux,
+                           user=user)
 
 # Voir la liste d’attente
 @admin_bp.route('/admin/attente')
