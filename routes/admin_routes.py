@@ -180,7 +180,7 @@ def gestion_matieres():
     
     # Définir les niveaux et parcours disponibles
     niveaux = ["L1", "L2", "L3", "M1", "M2"]
-    parcours_list = ["Informatique", "Mathématiques", "Physique", "Chimie", "Biologie"]
+    parcours_list = ["GB", "ASR", "GID", "OCC", "MDI","IG"]
     
     # Traitement du formulaire d'ajout
     if request.method == 'POST':
@@ -224,7 +224,7 @@ def modifier_matiere_route(id_matiere):
     
     # Définir les niveaux et parcours disponibles
     niveaux = ["L1", "L2", "L3", "M1", "M2"]
-    parcours_list = ["Informatique", "Mathématiques", "Physique", "Chimie", "Biologie"]
+    parcours_list = ["GB", "ASR", "GID", "OCC", "MDI","IG"]
     
     # Traitement du formulaire de modification
     if request.method == 'POST':
@@ -264,7 +264,7 @@ def matieres():
         return redirect(url_for('admin.connexion'))
 
     niveaux = ["L1", "L2", "L3", "M1", "M2"]
-    parcours_list = ["IG", "SR", "GB", "GID", "OCC"]
+    parcours_list = ["IG", "ASR", "GB", "GID", "OCC", "MDI"]
 
     # Récupérer les informations de l'utilisateur connecté
     user_id = session.get('user_id')
@@ -334,63 +334,74 @@ def supprimer_matiere_route(id_matiere):
 #Gestion notes
 @admin_bp.route('/notes', methods=['GET', 'POST'])
 def gestion_notes():
-    if 'user_email' not in session or session.get('role') != 'admin':
-        return redirect(url_for('admin.connexion'))
-
+    from models.matiere_model import get_all_matieres, get_matiere_by_id
+    from models.user_model import get_students_by_parcours_niveau
+    from models.notes_model import ajouter_note
+    from config.db import notes_collection
+    
+    # Vérifier si l'utilisateur est connecté et est un admin
+    if session.get('role') != 'admin':
+        return redirect(url_for('auth.connexion'))
+    
     # Récupérer les informations de l'utilisateur connecté
     user_id = session.get('user_id')
     user = infos_collection.find_one({"_id": ObjectId(user_id)})
-
+    
     matieres = get_all_matieres()
-    erreurs = []
     matiere_selectionnee = None
     etudiants = []
-    notes = {}  # Initialize empty notes dictionary
-
-    if request.method == 'POST':
-        id_matiere = request.form['matiere_id']
-        matiere_selectionnee = get_matiere_by_id(id_matiere)
-
-        # Étape 1 : L'admin a sélectionné une matière → on affiche les étudiants
-        if 'note_' not in ''.join(request.form.keys()):
-            if matiere_selectionnee:
-                etudiants = get_students_by_parcours_niveau(matiere_selectionnee['parcours'], matiere_selectionnee['niveau'])
-                
-                # Récupérer les notes existantes pour cette matière
-                existing_notes = notes_collection.find({
-                    'id_matiere': ObjectId(id_matiere)
-                })
-                
-                # Créer un dictionnaire avec les notes existantes
-                for note in existing_notes:
-                    student_id = note.get('id_etudiant')
-                    if student_id:
-                        notes[student_id] = note.get('note', '')
-            
-            return render_template("admin/gestion_notes.html", 
-                                  matieres=matieres, 
-                                  matiere_selectionnee=matiere_selectionnee, 
-                                  etudiants=etudiants,
-                                  notes=notes,
-                                  user=user)
-
-        # Étape 2 : L'admin a saisi des notes → on les enregistre
-        etudiants = get_students_by_parcours_niveau(matiere_selectionnee['parcours'], matiere_selectionnee['niveau'])
-        for etudiant in etudiants:
-            note_key = f"note_{etudiant['_id']}"
-            note_value = request.form.get(note_key)
-            if note_value: # Si la note est saisie
-                try:
-                    ajouter_note(etudiant['numero'], id_matiere, note_value)
-                except Exception as e:
-                    erreurs.append(f"Erreur pour {etudiant['nom']} : {e}")
-        return redirect(url_for('admin.gestion_notes'))
+    notes = {}
+    erreurs = []
     
-    return render_template("admin/gestion_notes.html", 
-                          matieres=matieres,
-                          notes={},  # Pass empty notes dictionary
-                          user=user)
-
+    if request.method == 'POST':
+        matiere_id = request.form.get('matiere_id')
+        
+        # Si on a des notes à enregistrer (formulaire avec les notes)
+        if any(key.startswith('note_') for key in request.form.keys()):
+            matiere = get_matiere_by_id(matiere_id)
+            
+            # Traitement des notes
+            for key, value in request.form.items():
+                if key.startswith('note_') and value.strip():
+                    etudiant_id = key.replace('note_', '')
+                    etudiant = infos_collection.find_one({"_id": ObjectId(etudiant_id)})
+                    
+                    try:
+                        ajouter_note(etudiant['numero'], matiere_id, value)
+                    except ValueError as e:
+                        erreurs.append(f"Erreur pour {etudiant['nom']}: {str(e)}")
+            
+            if not erreurs:
+                flash("Notes enregistrées avec succès", "success")
+                return redirect(url_for('admin.voir_moyennes'))
+        
+        # Si on a juste sélectionné une matière
+        if matiere_id:
+            matiere_selectionnee = get_matiere_by_id(matiere_id)
+            if matiere_selectionnee:
+                etudiants = list(get_students_by_parcours_niveau(
+                    matiere_selectionnee['parcours'], 
+                    matiere_selectionnee['niveau']
+                ))
+                
+                # Récupérer les notes existantes pour les afficher
+                for etudiant in etudiants:
+                    note = notes_collection.find_one({
+                        "numero_etudiant": etudiant['numero'],
+                        "id_matiere": ObjectId(matiere_id)
+                    })
+                    if note:
+                        notes[str(etudiant['_id'])] = note['note']
+    
+    return render_template(
+        'admin/gestion_notes.html',
+        matieres=matieres,
+        matiere_selectionnee=matiere_selectionnee,
+        etudiants=etudiants,
+        notes=notes,
+        erreurs=erreurs,
+        user=user
+    )
 #Supprimer note
 @admin_bp.route('/notes/supprimer/<note_id>')
 def supprimer_note_route(note_id):
@@ -403,83 +414,108 @@ def supprimer_note_route(note_id):
 #Gestion moyenne
 @admin_bp.route('/moyennes', methods=["GET", "POST"])
 def voir_moyennes():
-    if 'user_email' not in session or session.get('role') != 'admin':
-        return redirect(url_for('admin.connexion'))
+    from models.notes_model import calculer_moyennes_tous_etudiants
+    from models.user_model import get_all_students
+    from config.db import notes_collection, matieres_collection
     
-       # Récupérer les informations de l'utilisateur connecté
+    recherche = ""
+    selected_niveau = ""
+    selected_parcours = ""
+    
+    # Récupérer tous les étudiants pour les statistiques
+    etudiants = get_all_students()
+    
+      # Calculer les moyennes
+    tableau = calculer_moyennes_tous_etudiants()
+
+    # Extraire les niveaux et parcours uniques
+    niveaux = sorted(list(set(e["niveau"] for e in tableau if e["niveau"])))
+    parcours_list = sorted(list(set(e["parcours"] for e in tableau if e["parcours"])))
+
+    # Calculer les moyennes pour chaque étudiant
+    tableau = []
+    for etudiant in etudiants:
+        # Récupérer toutes les notes de l'étudiant
+        notes_etudiant = list(notes_collection.find({"numero_etudiant": etudiant.get("numero", "")}))
+        
+        # Préparer les données pour le calcul de la moyenne
+        notes_avec_coef = []
+        for note_doc in notes_etudiant:
+            matiere = matieres_collection.find_one({"_id": note_doc["id_matiere"]})
+            if matiere:
+                notes_avec_coef.append({
+                    "note": note_doc["note"],
+                    "coefficient": matiere.get("coefficient", 1)
+                })
+        
+        # Calculer la moyenne
+        moyenne = calculer_moyenne_etudiant(notes_avec_coef)
+        
+        # Déterminer la recommandation
+        recommandation = "Non évalué"
+        if notes_avec_coef:  # Si l'étudiant a des notes
+            if moyenne >= 10:
+                recommandation = "Admis"
+            else:
+                recommandation = "Redouble"
+        
+        tableau.append({
+            "_id": etudiant["_id"],
+            "numero": etudiant.get("numero", ""),
+            "nom": etudiant.get("nom", ""),
+            "email": etudiant.get("email", ""),
+            "niveau": etudiant.get("niveau", ""),
+            "parcours": etudiant.get("parcours", ""),
+            "moyenne": moyenne,
+            "recommandation": recommandation
+        })
+    
+    # Trier par moyenne décroissante
+    tableau = sorted(tableau, key=lambda x: x["moyenne"], reverse=True)
+    
+    # Ajouter le rang
+    for i, etud in enumerate(tableau):
+        etud["rang"] = i + 1
+    
+    # Filtrer selon les critères
+    if request.method == 'POST':
+        recherche = request.form.get('recherche', '')
+        selected_niveau = request.form.get('niveau', '')
+        selected_parcours = request.form.get('parcours', '')
+        
+        if recherche:
+            tableau = [e for e in tableau if recherche.lower() in e["nom"].lower() or recherche in e["numero"]]
+        
+        if selected_niveau:
+            tableau = [e for e in tableau if e["niveau"] == selected_niveau]
+        
+        if selected_parcours:
+            tableau = [e for e in tableau if e["parcours"] == selected_parcours]
+    
+    # Calculer les statistiques
+    nb_etudiants = len(tableau)
+    nb_admis = sum(1 for e in tableau if e["recommandation"] == "Admis")
+    nb_non_admis = sum(1 for e in tableau if e["recommandation"] == "Redouble")
+    
+    # Récupérer les informations de l'utilisateur connecté
     user_id = session.get('user_id')
     user = infos_collection.find_one({"_id": ObjectId(user_id)})
-
-    recherche = request.form.get("recherche", "").strip().lower()
-    filtre_niveau = request.form.get("niveau", "")
-    filtre_parcours = request.form.get("parcours", "")
-
-    etudiants = get_all_students()
-    notes_ = get_toutes_notes()
-    tableau_moyennes = []
-
-    for etudiant in etudiants:
-        numero = etudiant["numero"]
-        nom = etudiant["nom"]
-        email = etudiant["email"]
-        niveau = etudiant.get("niveau", "")
-        parcours = etudiant.get("parcours", "")
-
-        if recherche and (recherche not in nom.lower() and recherche not in numero):
-            continue
-        if filtre_niveau and niveau != filtre_niveau:
-            continue
-        if filtre_parcours and parcours != filtre_parcours:
-            continue
-
-        notes_etudiant = [
-            {
-                'note': note_doc['note'],
-                'coefficient': note_doc.get('coefficient', 1)
-            }
-            for note_doc in notes_
-            if note_doc['numero_etudiant'] == numero
-        ]
-
-        moyenne = calculer_moyenne_etudiant(notes_etudiant)
-        if moyenne is not None: # Si la moyenne est calculée
-            moyenne = round(moyenne, 2) # Arrondir la moyenne à 2 décimales
-
-        # Mettre à jour la moyenne dans la base
-        infos_collection.update_one(
-            {"numero": numero},
-            {"$set": {"moyenne": moyenne}})
-
-        tableau_moyennes.append({
-            "numero": numero,
-            "nom": nom,
-            "email": email,
-            "niveau": niveau,
-            "parcours": parcours,
-            "moyenne": moyenne,
-            "notes": [note['note'] for note in notes_etudiant]
-        })
-
-    # Tri par nom
-    tableau_moyennes.sort(key=lambda x: x["nom"].lower())
-
-    # Ajout du rang et recommandation
-    for i, etudiant in enumerate(tableau_moyennes, start=1):
-        etudiant["rang"] = i
-        etudiant["recommandation"] = "✅ Admis" if etudiant["moyenne"] >= 10 else "❌ Redoublant"
-
-    # Récupérer les niveaux et parcours
-    niveaux = sorted(set(e.get("niveau", "") for e in etudiants if e.get("niveau")))
-    parcours_list = sorted(set(e.get("parcours", "") for e in etudiants if e.get("parcours")))
-
-    return render_template("admin/moyennes.html",
-        tableau=tableau_moyennes,
+    
+    return render_template(
+        'admin/moyennes.html',
+        tableau=tableau,
         recherche=recherche,
+        selected_niveau=selected_niveau,
+        selected_parcours=selected_parcours,
         niveaux=niveaux,
         parcours_list=parcours_list,
-        selected_niveau=filtre_niveau,
-        selected_parcours=filtre_parcours ,user=user
+        nb_etudiants=nb_etudiants,
+        etudiants=tableau,  # Utiliser tableau au lieu de etudiants
+        nb_admis=nb_admis,
+        nb_non_admis=nb_non_admis,
+        user=user
     )
+
 
 #Affichage note par etudiant
 '''@admin_bp.route('/notes/detail/<numero_etudiant>', methods=['GET', 'POST'])

@@ -101,7 +101,15 @@
         <div class="content">{% block content %}{% endblock %}</div>
       </main>
     </div>
-
+    {% if get_flashed_messages() %}
+    <div class="flash-messages">
+      {% for category, message in get_flashed_messages(with_categories=true) %}
+      <div class="alert alert-{{ category }}">
+        <i class="fas fa-info-circle"></i> {{ message }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
     <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
     {% block extra_js %}{% endblock %}
   </body>
