@@ -1,200 +1,167 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Dashboard Enseignant</title>
-  <style>
-    body {
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to right, #e0f7fa, #ffffff);
-      margin: 0;
-      padding: 30px;
-      color: #333;
-    }
-
-    h2 {
-      color: #2c3e50;
-      font-size: 2.5em;
-      margin-bottom: 20px;
-      text-align: center;
-      text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
-    }
-
-    .container {
-      max-width: 1000px;
-      margin: auto;
-      background-color: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-    }
-
-    h3 {
-      color: #2e8a67;
-      text-align: center;
-      font-size: 1.8em;
-      margin-bottom: 20px;
-    }
-
-    .dashboard {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 25px;
-      margin-bottom: 40px;
-    }
-
-    .dashboard div {
-      background-color: #fff;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-      width: 250px;
-      text-align: center;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .dashboard div:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
-    }
-
-    .dashboard div a {
-      display: block;
-      color: #2e8a67;
-      font-size: 18px;
-      font-weight: 600;
-      text-decoration: none;
-      margin: 10px 0;
-    }
-
-    .dashboard div a:hover {
-      color: #28a776;
-    }
-
-    .reclamation-list {
-      list-style-type: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .reclamation-item {
-      background-color: #f9f9f9;
-      padding: 15px;
-      margin: 10px 0;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-      transition: transform 0.2s ease;
-    }
-
-    .reclamation-item:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-    }
-
-    .reclamation-item strong {
-      color: #2e8a67;
-    }
-
-    .btn {
-      background-color: #e74c3c;
-      color: white;
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-size: 16px;
-      text-decoration: none;
-      text-align: center;
-      display: inline-block;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      transition: background-color 0.3s ease;
-    }
-
-    .btn:hover {
-      background-color: #c0392b;
-    }
-
-    .logout {
-      background-color: #e74c3c;
-      color: white;
-      padding: 15px 25px;
-      border-radius: 8px;
-      font-size: 18px;
-      max-width: 250px;
-      margin: 30px auto 0;
-      text-align: center;
-      display: block;
-      text-decoration: none;
-      font-weight: 500;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      transition: background-color 0.3s ease;
-    }
-
-    .logout:hover {
-      background-color: #c0392b;
-    }
-
-    .logout:active {
-      transform: translateY(2px);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    @media (max-width: 768px) {
-      .dashboard div {
-        width: 100%;
-        max-width: 300px;
-      }
-
-      body {
-        padding: 15px;
-      }
-
-      h2 {
-        font-size: 2em;
-      }
-    }
-  </style>
-</head>
-<body>
-
-  <h2>👨‍🏫 Bienvenue, {{ user.nom }}</h2>
-  <p style="text-align: center;">📧 {{ user.email }}</p>
-
-  <div class="container">
-    <h3>📚 Vos Matières</h3>
-    <div class="dashboard">
-      {% for matiere in matieres %}
-        <div>
-          <span style="font-weight: bold;">{{ matiere.nom }} ({{ matiere.parcours }})</span>
-          <a href="{{ url_for('enseignant.gerer_notes', matiere_id=matiere._id) }}">✍️ Gérer les notes</a>
-          <a href="{{ url_for('enseignant.liste_reclamations', matiere_id=matiere._id) }}">📩 Voir les réclamations</a>
-        </div>
-      {% endfor %}
+{% extends "enseignant/layout.html" %} {% block title %}Tableau de bord -
+Enseignant{% endblock %} {% block page_title %}Tableau de bord{% endblock %} {%
+block content %}
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-header">
+      <span class="stat-title">Matières enseignées</span>
+      <div class="stat-icon blue">
+        <i class="fas fa-book"></i>
+      </div>
     </div>
-
-    <h3>⚠️ Réclamations en attente</h3>
-    <ul class="reclamation-list">
-      {% for rec in reclamations %}
-        <li class="reclamation-item">
-          <strong>Étudiant :</strong> {{ rec.nom_etudiant }}<br>
-          <strong>Matière :</strong> {{ rec.nom_matiere }}<br>
-          <strong>Commentaire :</strong> {{ rec.commentaire }}
-        </li>
-      {% else %}
-        <li>Aucune réclamation en attente.</li>
-      {% endfor %}
-    </ul>
-
-    {% if reclamations %}
-    <form method="POST" action="{{ url_for('enseignant.supprimer_toutes_reclamations_enseignant') }}">
-      <button class="btn" type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer TOUTES vos réclamations ? Cette action est irréversible.')">
-        🗑️ Supprimer toutes les réclamations
-      </button>
-    </form>
-    {% endif %}
+    <div class="stat-value">{{ matieres|length }}</div>
+    <div class="stat-description">Nombre total de matières</div>
   </div>
 
-  <a class="logout" href="/logout" onclick="return confirm('Voulez-vous vous déconnecter ?')">🚪 Déconnexion</a>
+  <div class="stat-card">
+    <div class="stat-header">
+      <span class="stat-title">Étudiants</span>
+      <div class="stat-icon green">
+        <i class="fas fa-user-graduate"></i>
+      </div>
+    </div>
+    <div class="stat-value">{{ total_etudiants }}</div>
+    <div class="stat-description">Nombre total d'étudiants</div>
+  </div>
 
-</body>
-</html>
+  <div class="stat-card">
+    <div class="stat-header">
+      <span class="stat-title">Réclamations</span>
+      <div class="stat-icon orange">
+        <i class="fas fa-comment-dots"></i>
+      </div>
+    </div>
+    <div class="stat-value">{{ reclamations|length }}</div>
+    <div class="stat-description">Réclamations en attente</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-header">
+      <span class="stat-title">Notes saisies</span>
+      <div class="stat-icon red">
+        <i class="fas fa-clipboard-check"></i>
+      </div>
+    </div>
+    <div class="stat-value">{{ total_notes }}</div>
+    <div class="stat-description">Nombre total de notes saisies</div>
+  </div>
+</div>
+
+<div class="card">
+  <h3><i class="fas fa-book"></i> Mes Matières</h3>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Matière</th>
+          <th>Parcours</th>
+          <th>Niveau</th>
+          <th>Coefficient</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for matiere in matieres %}
+        <tr>
+          <td>{{ matiere.nom }}</td>
+          <td>{{ matiere.parcours }}</td>
+          <td>{{ matiere.niveau }}</td>
+          <td>{{ matiere.coefficient }}</td>
+          <td>
+            <a
+              href="{{ url_for('enseignant.gerer_notes', matiere_id=matiere._id) }}"
+              class="btn btn-primary btn-sm"
+            >
+              <i class="fas fa-pen-to-square"></i> Gérer les notes
+            </a>
+            <a
+              href="{{ url_for('enseignant.liste_reclamations', matiere_id=matiere._id) }}"
+              class="btn btn-warning btn-sm"
+            >
+              <i class="fas fa-comment-dots"></i> Réclamations
+            </a>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="5" class="text-center">Aucune matière assignée.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% if reclamations %}
+<div class="card">
+  <h3><i class="fas fa-bell"></i> Réclamations récentes</h3>
+
+  <ul class="reclamation-list">
+    {% for rec in reclamations[:3] %}
+    <li class="reclamation-item">
+      <div class="reclamation-header">
+        <div class="reclamation-info">
+          <span class="reclamation-student"
+            ><i class="fas fa-user-graduate"></i> {{ rec.nom_etudiant }}</span
+          >
+          <span class="reclamation-matiere"
+            ><i class="fas fa-book"></i> {{ rec.nom_matiere }}</span
+          >
+        </div>
+        <span class="reclamation-date"
+          >{{ rec.date|default('Récemment') }}</span
+        >
+      </div>
+      <div class="reclamation-content">
+        <i
+          class="fas fa-quote-left"
+          style="opacity: 0.3; margin-right: 5px"
+        ></i>
+        {{ rec.commentaire }}
+      </div>
+      <div class="reclamation-actions">
+        <a
+          href="{{ url_for('enseignant.liste_reclamations', matiere_id=rec.matiere_id) }}"
+          class="btn btn-primary btn-sm"
+        >
+          <i class="fas fa-eye"></i> Voir détails
+        </a>
+        <form
+          method="POST"
+          action="{{ url_for('enseignant.supprimer_reclamation', reclamation_id=rec._id) }}"
+          style="display: inline"
+        >
+          <button type="submit" class="btn btn-danger btn-sm btn-delete">
+            <i class="fas fa-trash-alt"></i> Supprimer
+          </button>
+        </form>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+
+  {% if reclamations|length > 3 %}
+  <div style="text-align: center; margin-top: 20px">
+    <a
+      href="{{ url_for('enseignant.toutes_reclamations') }}"
+      class="btn btn-secondary"
+    >
+      <i class="fas fa-list"></i> Voir toutes les réclamations ({{
+      reclamations|length }})
+    </a>
+  </div>
+  {% endif %}
+
+  <div style="text-align: center; margin-top: 20px">
+    <form
+      method="POST"
+      action="{{ url_for('enseignant.supprimer_toutes_reclamations_enseignant') }}"
+    >
+      <button class="btn btn-danger btn-delete" type="submit">
+        <i class="fas fa-trash-alt"></i> Supprimer toutes les réclamations
+      </button>
+    </form>
+  </div>
+</div>
+{% endif %} {% endblock %}
