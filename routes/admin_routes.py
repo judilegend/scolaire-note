@@ -564,22 +564,34 @@ def detail_notes(numero_etudiant):
 
 # Modifier note
 @admin_bp.route("/modifier_note/<note_id>", methods=["GET", "POST"])
-# Modifier note
-@admin_bp.route("/modifier_note/<note_id>", methods=["GET", "POST"])
 def modifier_note(note_id):
+    # Vérifier si l'utilisateur est connecté et est un admin
+    if session.get('role') != 'admin':
+        return redirect(url_for('auth.connexion'))
+    
+    # Récupérer les informations de l'utilisateur connecté
     user_id = session.get('user_id')
     user = infos_collection.find_one({"_id": ObjectId(user_id)})
 
-    if not user or user.get('role') != 'admin':
-        flash("Vous n'avez pas les autorisations nécessaires pour accéder à cette page.", "error")
-        return redirect(url_for('admin.connexion'))
-
+    # Récupérer la note à modifier
     note_doc = notes_collection.find_one({"_id": ObjectId(note_id)})
     if not note_doc:
         flash("Note introuvable", "error")
         return redirect(url_for("admin.voir_moyennes"))
     
+    # Récupérer les informations de l'étudiant et de la matière
     numero_etudiant = note_doc["numero_etudiant"]
+    etudiant = infos_collection.find_one({"numero": numero_etudiant})
+    matiere = matieres_collection.find_one({"_id": note_doc["id_matiere"]})
+    
+    # Préparer les données pour le template
+    note = {
+        "etudiant_nom": etudiant.get("nom", "Inconnu"),
+        "etudiant_numero": numero_etudiant,
+        "matiere_nom": matiere.get("nom", "Inconnue") if matiere else "Inconnue",
+        "coefficient": matiere.get("coefficient", 1) if matiere else 1,
+        "note": note_doc["note"]
+    }
 
     if request.method == "POST":
         nouvelle_note = float(request.form["note"])
@@ -590,6 +602,8 @@ def modifier_note(note_id):
         flash("Note mise à jour avec succès ✅", "success")
         return redirect(url_for("admin.detail_notes", numero_etudiant=numero_etudiant))
 
+    # Retourner le template avec les données
+    return render_template("admin/modifier_note.html", note=note, user=user)
 #Publication de resultat
 @admin_bp.route('/publier_resultats', methods=['GET', 'POST'])
 def publier_resultats():
