@@ -193,7 +193,7 @@ def calculer_moyenne_complete(numero_etudiant):
     # Calculer la moyenne
     moyenne = 0
     if somme_coefficients > 0:
-        moyenne = somme_ponderee / somme_coefficients
+        moyenne = round(somme_ponderee / somme_coefficients, 2)
         
     return (moyenne, notes_avec_details)
 

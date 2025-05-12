@@ -79,35 +79,40 @@ def mes_notes():
     if not user:
         return redirect(url_for("auth.connexion"))
 
+    # Utiliser la fonction centralisée pour calculer la moyenne
+    from models.notes_model import calculer_moyenne_complete
+    moyenne, notes_details = calculer_moyenne_complete(user["numero"])
+    
+    # Récupérer les matières pour l'affichage
     parcours = user.get("parcours")
     niveau = user.get("niveau")  
-    matieres = matieres_collection.find({
+    matieres = list(matieres_collection.find({
         "parcours": parcours,
         "niveau": niveau
-    })
-
-    matieres_list = list(matieres)
- 
-    notes = notes_collection.find({"numero_etudiant": user["numero"]})
-    notes_dict = {note["id_matiere"]: note["note"] for note in notes}
-
-    # Calcul de la moyenne pondérée
-    total = 0
-    total_coeff = 0
-    for matiere in matieres_list:
-        note = notes_dict.get(matiere["_id"], 0)  # Utiliser 0 si la note est absente
-        coeff = matiere.get("coefficient", 1)
-        total += note * coeff
-        total_coeff += coeff
-
-    moyenne = round(total / total_coeff, 2) if total_coeff > 0 else "Non disponible"
-
+    }))
+    
+    # Créer un dictionnaire pour faciliter l'accès aux notes dans le template
+    notes_dict = {}
+    for note_detail in notes_details:
+        matiere_id = note_detail.get("id_matiere")
+        if matiere_id:
+            notes_dict[matiere_id] = note_detail.get("note")
+    
+    # Mettre à jour la moyenne dans la base de données pour cohérence
+    infos_collection.update_one(
+        {"_id": user["_id"]},
+        {"$set": {"moyenne": moyenne}}
+    )
+    
     # Passer l'ID de l'utilisateur au template
     user_id = str(user["_id"])
 
-    return render_template("etudiant/mes_notes.html", user=user, matieres=matieres_list, 
-                          notes_dict=notes_dict, moyenne=moyenne, user_id=user_id)
-
+    return render_template("etudiant/mes_notes.html", 
+                          user=user, 
+                          matieres=matieres, 
+                          notes_dict=notes_dict, 
+                          moyenne=moyenne, 
+                          user_id=user_id)
 
 # Réclamation
 @student_bp.route('/etudiant/reclamation/<matiere_id>', methods=['GET', 'POST'])
