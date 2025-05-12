@@ -415,60 +415,17 @@ def supprimer_note_route(note_id):
 @admin_bp.route('/moyennes', methods=["GET", "POST"])
 def voir_moyennes():
     from models.notes_model import calculer_moyennes_tous_etudiants
-    from models.user_model import get_all_students
-    from config.db import notes_collection, matieres_collection
     
     recherche = ""
     selected_niveau = ""
     selected_parcours = ""
     
-    # Récupérer tous les étudiants pour les statistiques
-    etudiants = get_all_students()
-    
-      # Calculer les moyennes
+    # Calculer les moyennes de tous les étudiants avec la fonction standardisée
     tableau = calculer_moyennes_tous_etudiants()
-
+    
     # Extraire les niveaux et parcours uniques
     niveaux = sorted(list(set(e["niveau"] for e in tableau if e["niveau"])))
     parcours_list = sorted(list(set(e["parcours"] for e in tableau if e["parcours"])))
-
-    # Calculer les moyennes pour chaque étudiant
-    tableau = []
-    for etudiant in etudiants:
-        # Récupérer toutes les notes de l'étudiant
-        notes_etudiant = list(notes_collection.find({"numero_etudiant": etudiant.get("numero", "")}))
-        
-        # Préparer les données pour le calcul de la moyenne
-        notes_avec_coef = []
-        for note_doc in notes_etudiant:
-            matiere = matieres_collection.find_one({"_id": note_doc["id_matiere"]})
-            if matiere:
-                notes_avec_coef.append({
-                    "note": note_doc["note"],
-                    "coefficient": matiere.get("coefficient", 1)
-                })
-        
-        # Calculer la moyenne
-        moyenne = calculer_moyenne_etudiant(notes_avec_coef)
-        
-        # Déterminer la recommandation
-        recommandation = "Non évalué"
-        if notes_avec_coef:  # Si l'étudiant a des notes
-            if moyenne >= 10:
-                recommandation = "Admis"
-            else:
-                recommandation = "Redouble"
-        
-        tableau.append({
-            "_id": etudiant["_id"],
-            "numero": etudiant.get("numero", ""),
-            "nom": etudiant.get("nom", ""),
-            "email": etudiant.get("email", ""),
-            "niveau": etudiant.get("niveau", ""),
-            "parcours": etudiant.get("parcours", ""),
-            "moyenne": moyenne,
-            "recommandation": recommandation
-        })
     
     # Trier par moyenne décroissante
     tableau = sorted(tableau, key=lambda x: x["moyenne"], reverse=True)
@@ -510,13 +467,11 @@ def voir_moyennes():
         niveaux=niveaux,
         parcours_list=parcours_list,
         nb_etudiants=nb_etudiants,
-        etudiants=tableau,  # Utiliser tableau au lieu de etudiants
+        etudiants=tableau,
         nb_admis=nb_admis,
         nb_non_admis=nb_non_admis,
         user=user
     )
-
-
 #Affichage note par etudiant
 '''@admin_bp.route('/notes/detail/<numero_etudiant>', methods=['GET', 'POST'])
 def detail_notes(numero_etudiant):
