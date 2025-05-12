@@ -579,6 +579,7 @@ def publier_resultats():
     etudiants = []
 
     if parcours_selectionne and niveau_selectionne:
+        # Récupérer les étudiants du parcours et niveau sélectionnés
         resultats = infos_collection.find({
             "parcours": parcours_selectionne,
             "niveau": niveau_selectionne,
@@ -587,6 +588,7 @@ def publier_resultats():
         })
 
         for e in resultats:
+            # Utiliser la moyenne déjà calculée et stockée dans la base de données
             etudiants.append({
                 "numero": e.get("numero", ""),
                 "nom": e.get("nom", ""),
@@ -595,25 +597,17 @@ def publier_resultats():
                 "niveau": e.get("niveau", ""),
                 "moyenne": e.get("moyenne", 0)
             })
-        print(f"Étudiants trouvés pour {parcours_selectionne} / {niveau_selectionne} : {[e['nom'] for e in etudiants]}")
 
         if confirmer:
-                liste_resultats = []
-                for etu in etudiants:
-                    moyenne = etu.get("moyenne", 0)  # Récupère la moyenne déjà stockée
-                    liste_resultats.append({
-                        "etudiant": etu,
-                        "moyenne": moyenne
-                    })
-                liste_resultats.sort(key=lambda x: x["moyenne"], reverse=True)
+            # Trier les étudiants par moyenne décroissante
+            etudiants.sort(key=lambda x: x["moyenne"], reverse=True)
+            
+            # Calcul du rang et envoi d'email
+            for rang, etudiant in enumerate(etudiants, start=1):
+                envoyer_email_resultat_session(etudiant, etudiant["moyenne"], rang)
 
-                # Calcul du rang et envoi d'email
-                for rang, res in enumerate(liste_resultats, start=1):
-                    envoyer_email_resultat_session(res["etudiant"], res["moyenne"], rang)
-
-                publication_effectuee = True
-                flash("Les résultats ont été publiés et envoyés par email avec succès !", "success")
-                return redirect(url_for('admin.publier_resultats'))
+            flash("Les résultats ont été publiés et envoyés par email avec succès !", "success")
+            return redirect(url_for('admin.publier_resultats'))
 
     return render_template("admin/publier_resultats.html",
                            etudiants=etudiants,
@@ -622,7 +616,6 @@ def publier_resultats():
                            parcours_list=parcours_list,
                            niveaux=niveaux,
                            user=user)
-
 # Voir la liste d’attente
 @admin_bp.route('/admin/attente')
 def liste_attente():
