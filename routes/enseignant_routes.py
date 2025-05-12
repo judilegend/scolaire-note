@@ -17,9 +17,16 @@ def dashboard():
         return redirect(url_for("auth.connexion"))
 
     matieres = matieres_collection.find({"professeur": user["nom"]})
-    reclamations = reclamation_collection.find({"enseignant_nom": user["nom"], "status": "En attente"})
+    reclamations = list(reclamation_collection.find({"enseignant_nom": user["nom"], "status": "En attente"}))
+    
+    # Ajouter le compteur de réclamations
+    reclamations_count = len(reclamations)
 
-    return render_template("enseignant/enseignant_dashboard.html", user=user, matieres=matieres, reclamations=reclamations)
+    return render_template("enseignant/enseignant_dashboard.html", 
+                          user=user, 
+                          matieres=matieres, 
+                          reclamations=reclamations,
+                          reclamations_count=reclamations_count)
 
 # ROUTE POUR AFFICHER LES NOTES
 @enseignant_bp.route('/matiere/<matiere_id>/notes', methods=['GET'])
