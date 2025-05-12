@@ -89,15 +89,12 @@ matiere.nom }}{% endblock %} {% block page_title %}Réclamations - {{ matiere.no
         >
           <i class="fas fa-pen-to-square"></i> Modifier la note
         </a>
-        <form
-          method="POST"
-          action="{{ url_for('enseignant.supprimer_reclamation', reclamation_id=rec._id) }}"
-          style="display: inline"
+        <a
+          href="{{ url_for('enseignant.repondre_reclamation', reclamation_id=rec._id, action='refuser') }}"
+          class="btn btn-danger btn-sm btn-delete"
         >
-          <button type="submit" class="btn btn-danger btn-sm btn-delete">
-            <i class="fas fa-trash-alt"></i> Supprimer
-          </button>
-        </form>
+          <i class="fas fa-trash-alt"></i> Supprimer
+        </a>
       </div>
     </li>
     {% endfor %}
@@ -106,8 +103,8 @@ matiere.nom }}{% endblock %} {% block page_title %}Réclamations - {{ matiere.no
   <div style="text-align: center; margin-top: 20px">
     <form
       method="POST"
-      action="{{ url_for('enseignant.supprimer_reclamations_matiere', matiere_id=matiere._id) }}"
-    >
+      action="{{ url_for('enseignant.supprimer_reclamations_traitees_matiere', matiere_id=matiere._id) }}
+      >
       <button class="btn btn-danger btn-delete" type="submit">
         <i class="fas fa-trash-alt"></i> Supprimer toutes les réclamations de
         cette matière

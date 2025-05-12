@@ -34,6 +34,9 @@ def gerer_notes(matiere_id):
     if "user_email" not in session:
         return redirect(url_for("auth.connexion"))
 
+    email = session.get('user_email')
+    user = infos_collection.find_one({"email": email, "role": "enseignant", "approuve": True})
+    
     matiere_id_obj = ObjectId(matiere_id)
     matiere = matieres_collection.find_one({"_id": matiere_id_obj})
     if not matiere:
@@ -48,13 +51,23 @@ def gerer_notes(matiere_id):
     }).sort("nom", 1))
 
     # Notes existantes pour la matière
-    notes = notes_collection.find({"id_matiere": matiere_id_obj})
-    note_dict = {note["numero_etudiant"]: note["note"] for note in notes}
+    notes_cursor = notes_collection.find({"id_matiere": matiere_id_obj})
+    notes = {note["numero_etudiant"]: note["note"] for note in notes_cursor}
+    
+    # Récupérer les réclamations pour le compteur
+    reclamations = list(reclamation_collection.find({"enseignant_nom": user["nom"], "status": "En attente"}))
+    reclamations_count = len(reclamations)
+    
+    # Récupérer les matières pour le menu déroulant
+    matieres = matieres_collection.find({"professeur": user["nom"]})
 
     return render_template("enseignant/enseignant_notes_matiere.html", 
         matiere=matiere,
         etudiants=etudiants,
-        note_dict=note_dict
+        notes=notes,  # Changé de note_dict à notes
+        user=user,
+        reclamations_count=reclamations_count,
+        matieres=matieres
     )
 
 # ROUTE POUR ENREGISTRER/MODIFIER LES NOTES
@@ -108,12 +121,21 @@ def liste_reclamations(matiere_id):
         "enseignant_nom": nom_enseignant,
         "matiere_id": matiere_id
     }))
+    
+    # Récupérer les réclamations en attente pour le compteur
+    reclamations_en_attente = list(reclamation_collection.find({"enseignant_nom": nom_enseignant, "status": "En attente"}))
+    reclamations_count = len(reclamations_en_attente)
+    
+    # Récupérer les matières pour le menu déroulant
+    matieres = matieres_collection.find({"professeur": nom_enseignant})
 
     return render_template("enseignant/enseignant_reclamations.html",
                            enseignant=enseignant,
+                           user=enseignant,  # Ajout de user pour layout.html
                            matiere=matiere,
-                           reclamations=reclamations)
-
+                           reclamations=reclamations,
+                           reclamations_count=reclamations_count,
+                           matieres=matieres)
 # Repondre reclamation
 def send_email(to_email, subject, body):
     from_email = "olivandry.777@gmail.com"
@@ -221,3 +243,61 @@ def supprimer_toutes_reclamations_enseignant():
 
     flash(f"Toutes les réclamations ({resultat.deleted_count}) ont été supprimées.", "success")
     return redirect(url_for("enseignant.dashboard"))
+# supprimer une réclamation
+@enseignant_bp.route('/reclamation/<reclamation_id>/supprimer', methods=['POST'])
+def supprimer_reclamation(reclamation_id):
+    email = session.get('user_email')
+    enseignant = infos_collection.find_one({"email": email, "role": "enseignant"})
+    
+    if not enseignant:
+        flash("Accès non autorisé.", "error")
+        return redirect(url_for("auth.connexion"))
+    
+    # Vérifier si la réclamation existe
+    reclamation = reclamation_collection.find_one({"_id": ObjectId(reclamation_id)})
+    if not reclamation:
+        flash("Réclamation introuvable.", "error")
+        return redirect(url_for("enseignant.dashboard"))
+    
+    # Vérifier si l'enseignant est autorisé à supprimer cette réclamation
+    if reclamation.get("enseignant_nom") != enseignant.get("nom"):
+        flash("Vous n'êtes pas autorisé à supprimer cette réclamation.", "error")
+        return redirect(url_for("enseignant.dashboard"))
+    
+    # Supprimer la réclamation
+    reclamation_collection.delete_one({"_id": ObjectId(reclamation_id)})
+    
+    flash("La réclamation a été supprimée avec succès.", "success")
+    
+    # Rediriger vers la page des réclamations de la matière si disponible
+    matiere_id = reclamation.get("matiere_id")
+    if matiere_id:
+        return redirect(url_for("enseignant.liste_reclamations", matiere_id=matiere_id))
+    else:
+        return redirect(url_for("enseignant.dashboard"))
+
+@enseignant_bp.route('/reclamations/<matiere_id>/supprimer_toutes', methods=['POST'])
+def supprimer_reclamations_matiere(matiere_id):
+    email = session.get("user_email")
+    enseignant = infos_collection.find_one({"email": email, "role": "enseignant"})
+    if not enseignant:
+        flash("Accès non autorisé.", "error")
+        return redirect(url_for("auth.connexion"))
+
+    nom_enseignant = enseignant.get("nom")
+    matiere = matieres_collection.find_one({
+        "_id": ObjectId(matiere_id),
+        "professeur": nom_enseignant
+    })
+    if not matiere:
+        flash("Matière introuvable ou non autorisée.", "error")
+        return redirect(url_for("enseignant.dashboard"))
+
+    # Supprimer toutes les réclamations pour cette matière
+    resultat = reclamation_collection.delete_many({
+        "matiere_id": matiere_id,
+        "enseignant_nom": nom_enseignant
+    })
+
+    flash(f"{resultat.deleted_count} réclamation(s) supprimée(s) pour la matière {matiere['nom']}.", "success")
+    return redirect(url_for("enseignant.liste_reclamations", matiere_id=matiere_id))

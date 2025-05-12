@@ -9,7 +9,6 @@ block content %}
         <i class="fas fa-book"></i>
       </div>
     </div>
-    <div class="stat-value">{{ matieres|length }}</div>
     <div class="stat-description">Nombre total de matières</div>
   </div>
 
@@ -127,15 +126,6 @@ block content %}
         >
           <i class="fas fa-eye"></i> Voir détails
         </a>
-        <form
-          method="POST"
-          action="{{ url_for('enseignant.supprimer_reclamation', reclamation_id=rec._id) }}"
-          style="display: inline"
-        >
-          <button type="submit" class="btn btn-danger btn-sm btn-delete">
-            <i class="fas fa-trash-alt"></i> Supprimer
-          </button>
-        </form>
       </div>
     </li>
     {% endfor %}
