@@ -1,92 +1,251 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Profil Utilisateur</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f5;
-            padding: 40px;
-            color: #333;
-        }
+{% extends "admin/layout.html" %} {% block title %}Profil Utilisateur{% endblock
+%} {% block page_title %}Profil Utilisateur{% endblock %} {% block content %}
+<div class="card">
+  <h3>
+    <i class="fas fa-user-circle"></i> Profil de {{ user.role | capitalize }}
+  </h3>
 
-        .container {
-            max-width: 600px;
-            margin: auto;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-        }
-
-        h2 {
-            text-align: center;
-            color: #2e8a67;
-            margin-bottom: 30px;
-        }
-
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        li {
-            margin-bottom: 12px;
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        strong {
-            color: #2e8a67;
-        }
-
-        a {
-            display: inline-block;
-            margin-top: 30px;
-            color: #2e8a67;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        .back-link {
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="container">
-        <h2>👤 Profil de {{ user.role | capitalize }}</h2>
-
-        <ul>
-            <li><strong>Email :</strong> {{ user.email }}</li>
-            <li><strong>Rôle :</strong> {{ user.role }}</li>
-
-            {% if user.role == 'etudiant' %}
-                <li><strong>Nom :</strong> {{ user.nom }}</li>
-                <li><strong>Numéro :</strong> {{ user.numero }}</li>
-                <li><strong>Parcours :</strong> {{ user.parcours }}</li>
-                <li><strong>Niveau :</strong> {{ user.niveau }}</li>
-
-            {% elif user.role == 'enseignant' %}
-                <li><strong>Nom :</strong> {{ user.nom }}</li>
-                <li><strong>Spécialité :</strong> {{ user.matiere }}</li>
-
-            {% elif user.role == 'admin' %}
-                <li><strong>Nom :</strong> {{ user.nom }}</li>
-                <li><strong>Service :</strong> {{ user.identifiant }}</li>
-            {% endif %}
-        </ul>
-
-        <div class="back-link">
-            <a href="{{ url_for('admin.liste_attente') }}">⬅ Retour à la liste des utilisateurs</a>
-        </div>
+  <div class="user-profile">
+    <div class="profile-header">
+      <div class="profile-avatar">
+        <img
+          src="https://ui-avatars.com/api/?name={{ user.nom }}&background=2e8a67&color=fff&size=120"
+          alt="Avatar"
+        />
+      </div>
+      <div class="profile-info">
+        <h2>{{ user.nom }}</h2>
+        <span class="role-badge role-{{ user.role }}"
+          >{{ user.role | capitalize }}</span
+        >
+        <p class="email"><i class="fas fa-envelope"></i> {{ user.email }}</p>
+      </div>
     </div>
 
-</body>
-</html>
+    <div class="profile-details">
+      <h4><i class="fas fa-info-circle"></i> Informations détaillées</h4>
+
+      <div class="details-grid">
+        {% if user.role == 'etudiant' %}
+        <div class="detail-item">
+          <span class="detail-label"
+            ><i class="fas fa-id-card"></i> Numéro</span
+          >
+          <span class="detail-value">{{ user.numero }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label"
+            ><i class="fas fa-graduation-cap"></i> Parcours</span
+          >
+          <span class="detail-value">{{ user.parcours }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label"
+            ><i class="fas fa-layer-group"></i> Niveau</span
+          >
+          <span class="detail-value">{{ user.niveau }}</span>
+        </div>
+
+        {% elif user.role == 'enseignant' %}
+        <div class="detail-item">
+          <span class="detail-label"
+            ><i class="fas fa-book"></i> Spécialité</span
+          >
+          <span class="detail-value">{{ user.matiere }}</span>
+        </div>
+
+        {% elif user.role == 'admin' %}
+        <div class="detail-item">
+          <span class="detail-label"
+            ><i class="fas fa-briefcase"></i> Service</span
+          >
+          <span class="detail-value">{{ user.identifiant }}</span>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <a href="{{ url_for('admin.liste_attente') }}" class="btn btn-secondary">
+      <i class="fas fa-arrow-left"></i> Retour à la liste des utilisateurs
+    </a>
+
+    {% if not user.approuve %}
+    <div class="approval-actions">
+      <form
+        action="{{ url_for('admin.accepter_utilisateur', user_id=user._id) }}"
+        method="POST"
+        style="display: inline"
+      >
+        <button type="submit" class="btn btn-success">
+          <i class="fas fa-check"></i> Approuver
+        </button>
+      </form>
+
+      <form
+        action="{{ url_for('admin.refuser_utilisateur', user_id=user._id) }}"
+        method="POST"
+        style="display: inline"
+      >
+        <button
+          type="submit"
+          class="btn btn-danger"
+          onclick="return confirm('Êtes-vous sûr de vouloir refuser cet utilisateur ?')"
+        >
+          <i class="fas fa-times"></i> Refuser
+        </button>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+  .user-profile {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .profile-header {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .profile-avatar img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--primary);
+    box-shadow: 0 4px 10px rgba(46, 138, 103, 0.2);
+  }
+
+  .profile-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .profile-info h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin: 0;
+  }
+
+  .role-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    width: fit-content;
+  }
+
+  .role-etudiant {
+    background-color: rgba(52, 152, 219, 0.1);
+    color: #3498db;
+  }
+
+  .role-enseignant {
+    background-color: rgba(46, 204, 113, 0.1);
+    color: #27ae60;
+  }
+
+  .role-admin {
+    background-color: rgba(155, 89, 182, 0.1);
+    color: #8e44ad;
+  }
+
+  .email {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-light);
+    font-size: 0.95rem;
+  }
+
+  .profile-details {
+    background-color: rgba(46, 138, 103, 0.05);
+    border-radius: 10px;
+    padding: 20px;
+  }
+
+  .profile-details h4 {
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+  }
+
+  .detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .detail-label {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .detail-value {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--text-dark);
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .approval-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  @media (max-width: 768px) {
+    .profile-header {
+      flex-direction: column;
+      text-align: center;
+      gap: 15px;
+    }
+
+    .profile-info {
+      align-items: center;
+    }
+
+    .form-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .approval-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>
+{% endblock %}
