@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Espace Enseignant{% endblock %}</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/teacher_style.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    {% block extra_css %}{% endblock %}
+  </head>
+  <body>
+    <button class="sidebar-toggle">
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="layout-container">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <h4><i class="fas fa-chalkboard-teacher"></i> Espace Enseignant</h4>
+        </div>
+
+        <div class="sidebar-menu">
+          <ul>
+            <li>
+              <a href="{{ url_for('enseignant.dashboard') }}">
+                <i class="fas fa-home"></i> Tableau de bord
+              </a>
+            </li>
+            <li class="sidebar-dropdown">
+              <a href="#" class="dropdown-toggle">
+                <i class="fas fa-book"></i> Mes Matières
+                <i class="fas fa-chevron-down dropdown-icon"></i>
+              </a>
+              <div class="dropdown-menu">
+                {% for matiere in matieres %}
+                <a
+                  href="{{ url_for('enseignant.gerer_notes', matiere_id=matiere._id) }}"
+                >
+                  <i class="fas fa-angle-right"></i> {{ matiere.nom }}
+                </a>
+                {% endfor %}
+              </div>
+            </li>
+            <li>
+              <a href="#" id="reclamations-link">
+                <i class="fas fa-comment-dots"></i> Réclamations {% if
+                reclamations_count > 0 %}
+                <span class="badge">{{ reclamations_count }}</span>
+                {% endif %}
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="sidebar-footer">
+          <a
+            href="/logout"
+            class="btn btn-danger"
+            onclick="return confirm('Voulez-vous vous déconnecter ?')"
+          >
+            <i class="fas fa-sign-out-alt"></i> Déconnexion
+          </a>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Navbar -->
+        <nav class="navbar">
+          <div class="navbar-title">
+            <h1>{% block page_title %}Tableau de bord{% endblock %}</h1>
+          </div>
+          <div class="navbar-user">
+            <img
+              src="https://ui-avatars.com/api/?name={{ user.nom }}&background=random"
+              alt="Avatar"
+            />
+            <span>{{ user.nom }} (Enseignant)</span>
+          </div>
+        </nav>
+
+        <!-- Page Content -->
+        <div class="content">{% block content %}{% endblock %}</div>
+      </main>
+    </div>
+    {% if get_flashed_messages() %}
+    <div class="flash-messages">
+      {% for category, message in get_flashed_messages(with_categories=true) %}
+      <div class="alert alert-{{ category }}">
+        <i class="fas fa-info-circle"></i> {{ message }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    <script src="{{ url_for('static', filename='js/teacher.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+  </body>
+</html>
