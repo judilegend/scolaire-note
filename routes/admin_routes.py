@@ -554,6 +554,15 @@ def modifier_note(note_id):
             {"_id": ObjectId(note_id)},
             {"$set": {"note": nouvelle_note}}
         )
+        
+        # Recalculer la moyenne de l'étudiant et mettre à jour dans la base de données
+        from models.notes_model import calculer_moyenne_complete
+        moyenne, _ = calculer_moyenne_complete(numero_etudiant)
+        infos_collection.update_one(
+            {"numero": numero_etudiant},
+            {"$set": {"moyenne": moyenne}}
+        )
+        
         flash("Note mise à jour avec succès ✅", "success")
         return redirect(url_for("admin.detail_notes", numero_etudiant=numero_etudiant))
 

@@ -160,18 +160,7 @@ def calculer_moyennes_tous_etudiants():
     return tableau_trie
 
 
-    def calculer_moyenne_complete(numero_etudiant):
-    """
-    Calcule la moyenne d'un étudiant en tenant compte des coefficients des matières.
-    
-    Args:
-        numero_etudiant (str): Le numéro d'identification de l'étudiant
-        
-    Returns:
-        tuple: (moyenne, notes_avec_details) où:
-            - moyenne est un float représentant la moyenne pondérée
-            - notes_avec_details est une liste de dictionnaires contenant les détails des notes
-    """
+def calculer_moyenne_complete(numero_etudiant):
     from config.db import notes_collection, matieres_collection
     
     # Récupérer toutes les notes de l'étudiant
