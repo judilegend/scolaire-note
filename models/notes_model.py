@@ -158,3 +158,95 @@ def calculer_moyennes_tous_etudiants():
         etud["rang"] = i + 1
     
     return tableau_trie
+
+
+    def calculer_moyenne_complete(numero_etudiant):
+    """
+    Calcule la moyenne d'un étudiant en tenant compte des coefficients des matières.
+    
+    Args:
+        numero_etudiant (str): Le numéro d'identification de l'étudiant
+        
+    Returns:
+        tuple: (moyenne, notes_avec_details) où:
+            - moyenne est un float représentant la moyenne pondérée
+            - notes_avec_details est une liste de dictionnaires contenant les détails des notes
+    """
+    from config.db import notes_collection, matieres_collection
+    
+    # Récupérer toutes les notes de l'étudiant
+    notes_etudiant = list(notes_collection.find({"numero_etudiant": numero_etudiant}))
+    
+    # Préparer les données pour le calcul de la moyenne
+    notes_avec_details = []
+    somme_ponderee = 0
+    somme_coefficients = 0
+    
+    for note_doc in notes_etudiant:
+        matiere = matieres_collection.find_one({"_id": note_doc["id_matiere"]})
+        if matiere:
+            coefficient = matiere.get("coefficient", 1)
+            note_valeur = note_doc["note"]
+            
+            # Ajouter à la somme pondérée
+            somme_ponderee += note_valeur * coefficient
+            somme_coefficients += coefficient
+            
+            # Stocker les détails pour référence
+            notes_avec_details.append({
+                "id_note": note_doc["_id"],
+                "matiere": matiere.get("nom", "Inconnue"),
+                "coefficient": coefficient,
+                "note": note_valeur,
+                "note_ponderee": note_valeur * coefficient
+            })
+    
+    # Calculer la moyenne
+    moyenne = 0
+    if somme_coefficients > 0:
+        moyenne = somme_ponderee / somme_coefficients
+        
+    return (moyenne, notes_avec_details)
+
+def calculer_moyennes_tous_etudiants():
+    """
+    Calcule les moyennes de tous les étudiants.
+    
+    Returns:
+        list: Liste de dictionnaires contenant les informations des étudiants avec leurs moyennes
+    """
+    from models.user_model import get_all_students
+    from config.db import infos_collection
+    
+    etudiants = get_all_students()
+    resultats = []
+    
+    for etudiant in etudiants:
+        moyenne, _ = calculer_moyenne_complete(etudiant.get("numero", ""))
+        
+        # Déterminer la recommandation
+        recommandation = "Non évalué"
+        if moyenne > 0:  # Si l'étudiant a des notes
+            if moyenne >= 10:
+                recommandation = "Admis"
+            else:
+                recommandation = "Redouble"
+        
+        # Mettre à jour la moyenne dans la base de données
+        infos_collection.update_one(
+            {"_id": etudiant["_id"]},
+            {"$set": {"moyenne": moyenne}}
+        )
+        
+        resultats.append({
+            "_id": etudiant["_id"],
+            "numero": etudiant.get("numero", ""),
+            "nom": etudiant.get("nom", ""),
+            "email": etudiant.get("email", ""),
+            "niveau": etudiant.get("niveau", ""),
+            "parcours": etudiant.get("parcours", ""),
+            "moyenne": moyenne,
+            "recommandation": recommandation
+        })
+    
+    return resultats
