@@ -9,4 +9,4 @@ flask_pymongo
 flask_cors
 
 
-pip install reportlab
+reportlab
