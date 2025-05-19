@@ -24,20 +24,63 @@ def dashboard():
     return render_template("admin/admin_dashboard.html", user=user)
 
 # Liste des etudiants
-@admin_bp.route('/etudiants')
-def liste_etudiants():
+# Modifiez cette route
+@admin_bp.route("/etudiants", methods=["GET", "POST"])
+def liste_etudiants():  # Renommé de gerer_etudiants à liste_etudiants
     if session.get('role') != 'admin':
         return redirect(url_for('auth.connexion'))
     
-    #Récupérer les infos de user connecté
+    # Récupérer les informations de l'utilisateur connecté
     user_id = session.get('user_id')
-
     user = infos_collection.find_one({"_id": ObjectId(user_id)})
 
-    
-    # Récupérer tous les étudiants déjà approuvé
-    etudiants = get_all_students()
-    return render_template('admin/liste_etudiants.html', etudiants=etudiants, user=user)
+    # Récupération de tous les étudiants
+    recherche = request.form.get("recherche", "").strip().lower()
+    selected_niveau = request.form.get("niveau", "")
+    selected_parcours = request.form.get("parcours", "")
+
+    # Récupération de tous les étudiants approuvés
+    tous = get_all_students()
+    etudiants = []
+    niveaux_set = set()
+    parcours_set = set()
+
+    for e in tous:
+        numero = e["numero"]
+        nom = e["nom"]
+        niveau = e.get("niveau", "")
+        parcours = e.get("parcours", "")
+        email = e.get("email", "")
+
+        # Ajout des niveaux et parcours dans les ensembles
+        niveaux_set.add(niveau)
+        parcours_set.add(parcours)
+
+        # Filtrer les étudiants en fonction de la recherche et des filtres
+        if recherche and recherche not in nom.lower() and recherche not in numero:
+            continue
+        if selected_niveau and niveau != selected_niveau:
+            continue
+        if selected_parcours and parcours != selected_parcours:
+            continue
+
+        etudiants.append({
+            "numero": numero,
+            "nom": nom,
+            "niveau": niveau,
+            "parcours": parcours,
+            "email": email
+        })
+
+    return render_template("admin/liste_etudiants.html",
+                           etudiants=etudiants,
+                           recherche=recherche,
+                           niveaux=sorted(niveaux_set),
+                           parcours_list=sorted(parcours_set),
+                           selected_niveau=selected_niveau,
+                           selected_parcours=selected_parcours,
+                           nb_etudiants=len(etudiants),
+                           user=user)
 
 # Gestion etudiants
 @admin_bp.route("/etudiants", methods=["GET", "POST"])

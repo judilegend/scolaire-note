@@ -17,20 +17,18 @@ content %}
       <label><i class="fas fa-graduation-cap"></i> Niveau</label>
       <select name="niveau">
         <option value="">-- Niveau --</option>
-        <!-- {% for niv in niveaux %}
-        <option value="{{ niv }}" {% if selected_niveau == niv %}selected{% endif %}>
-          {{ niv }}
-        </option>
-        {% endfor %} -->
+        {% for niv in niveaux %}
+        <option value="{{ niv }}" {% if selected_niveau == niv %}selected{% endif %}>{{ niv }}</option>
+        {% endfor %}
       </select>
     </div>
     <div class="search-input">
       <label><i class="fas fa-bookmark"></i> Parcours</label>
       <select name="parcours">
         <option value="">-- Parcours --</option>
-        <!-- {% for p in parcours_list %}
+        {% for p in parcours_list %}
         <option value="{{ p }}" {% if selected_parcours == p %}selected{% endif %}>{{ p }}</option>
-        {% endfor %} -->
+        {% endfor %}
       </select>
     </div>
     <button type="submit" class="btn btn-primary">
