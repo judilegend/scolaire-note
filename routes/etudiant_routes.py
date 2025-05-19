@@ -79,9 +79,13 @@ def mes_notes():
     if not user:
         return redirect(url_for("auth.connexion"))
 
+    # Récupérer directement les notes de l'étudiant depuis la collection notes
+    numero_etudiant = user["numero"]
+    notes_etudiant = list(notes_collection.find({"numero_etudiant": numero_etudiant}))
+    
     # Utiliser la fonction centralisée pour calculer la moyenne
     from models.notes_model import calculer_moyenne_complete
-    moyenne, notes_details = calculer_moyenne_complete(user["numero"])
+    moyenne, notes_details = calculer_moyenne_complete(numero_etudiant)
     
     # Récupérer les matières pour l'affichage
     parcours = user.get("parcours")
@@ -93,10 +97,18 @@ def mes_notes():
     
     # Créer un dictionnaire pour faciliter l'accès aux notes dans le template
     notes_dict = {}
-    for note_detail in notes_details:
-        matiere_id = note_detail.get("id_matiere")
+    
+    # Remplir le dictionnaire directement à partir des notes récupérées
+    for note in notes_etudiant:
+        matiere_id = note.get("id_matiere")
         if matiere_id:
-            notes_dict[matiere_id] = note_detail.get("note")
+            notes_dict[str(matiere_id)] = note.get("note")
+    
+    # Afficher pour débogage
+    print("Notes dictionary:", notes_dict)
+    for matiere in matieres:
+        print(f"Matière ID: {matiere['_id']} (type: {type(matiere['_id'])})")
+        print(f"Existe dans notes_dict? {str(matiere['_id']) in notes_dict}")
     
     # Mettre à jour la moyenne dans la base de données pour cohérence
     infos_collection.update_one(

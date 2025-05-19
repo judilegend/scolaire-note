@@ -17,7 +17,7 @@
         <tr>
           <td>{{ matiere.nom }}</td>
           <td>
-            {% if notes_dict[matiere._id] %}
+            {% if notes_dict[matiere._id|string] %}
             <span
               style="
                 font-weight: bold;
@@ -27,7 +27,7 @@
                 display: inline-block;
               "
             >
-              {{ notes_dict[matiere._id] }}
+              {{ notes_dict[matiere._id|string] }}
             </span>
             {% else %}
             <em style="color: var(--text-light)">Non noté</em>
