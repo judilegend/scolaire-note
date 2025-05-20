@@ -73,9 +73,9 @@ content %}
           <td>{{ etudiant.parcours }}</td>
           <td>{{ etudiant.email }}</td>
           <td>
-            <button class="btn btn-sm btn-primary" disabled>
+            <a href="{{ url_for('admin.modifier_etudiant', etudiant_id=etudiant.numero) }}" class="btn btn-sm btn-primary">
               <i class="fas fa-edit"></i> Modifier
-            </button>
+            </a>
             <a
               href="{{ url_for('admin.detail_notes', numero_etudiant=etudiant.numero) }}"
               class="btn btn-sm btn-secondary"
