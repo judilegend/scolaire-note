@@ -8,6 +8,7 @@ from email.mime.text import MIMEText
 enseignant_bp = Blueprint('enseignant', __name__)
 
 # Tableau de bord enseignant
+# Tableau de bord enseignant
 @enseignant_bp.route('/dashboard')
 def dashboard():
     email = session.get('user_email')
@@ -16,17 +17,50 @@ def dashboard():
     if not user:
         return redirect(url_for("auth.connexion"))
 
-    matieres = matieres_collection.find({"professeur": user["nom"]})
-    reclamations = list(reclamation_collection.find({"enseignant_nom": user["nom"], "status": "En attente"}))
+    # Récupérer les matières enseignées par ce professeur
+    matieres = list(matieres_collection.find({"professeur": user["nom"]}))
     
-    # Ajouter le compteur de réclamations
+    # Compter le nombre total de matières
+    total_matieres = len(matieres)
+    
+    # Récupérer les réclamations en attente
+    reclamations = list(reclamation_collection.find({"enseignant_nom": user["nom"], "status": "En attente"}))
     reclamations_count = len(reclamations)
+    
+    # Calculer le nombre total d'étudiants pour les matières enseignées
+    total_etudiants = 0
+    parcours_niveaux = set()
+    
+    for matiere in matieres:
+        parcours = matiere.get("parcours")
+        niveau = matiere.get("niveau")
+        if parcours and niveau:
+            parcours_niveaux.add((parcours, niveau))
+    
+    # Compter les étudiants uniques dans les classes où l'enseignant enseigne
+    for parcours, niveau in parcours_niveaux:
+        etudiants_count = infos_collection.count_documents({
+            "role": "etudiant",
+            "approuve": True,
+            "parcours": parcours,
+            "niveau": niveau
+        })
+        total_etudiants += etudiants_count
+    
+    # Compter le nombre total de notes saisies par cet enseignant
+    total_notes = 0
+    for matiere in matieres:
+        notes_count = notes_collection.count_documents({"id_matiere": matiere["_id"]})
+        total_notes += notes_count
 
     return render_template("enseignant/enseignant_dashboard.html", 
                           user=user, 
                           matieres=matieres, 
                           reclamations=reclamations,
-                          reclamations_count=reclamations_count)
+                          reclamations_count=reclamations_count,
+                          total_matieres=total_matieres,
+                          total_etudiants=total_etudiants,
+                          total_notes=total_notes)
 
 # ROUTE POUR AFFICHER LES NOTES
 @enseignant_bp.route('/matiere/<matiere_id>/notes', methods=['GET'])
