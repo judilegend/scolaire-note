@@ -8,7 +8,6 @@ from email.mime.text import MIMEText
 enseignant_bp = Blueprint('enseignant', __name__)
 
 # Tableau de bord enseignant
-# Tableau de bord enseignant
 @enseignant_bp.route('/dashboard')
 def dashboard():
     email = session.get('user_email')
@@ -52,6 +51,35 @@ def dashboard():
     for matiere in matieres:
         notes_count = notes_collection.count_documents({"id_matiere": matiere["_id"]})
         total_notes += notes_count
+        
+    # Récupérer les dernières notes saisies (pour affichage dans le dashboard)
+    dernieres_notes = []
+    for matiere in matieres:
+        # Récupérer les étudiants de cette matière
+        etudiants = list(infos_collection.find({
+            "role": "etudiant",
+            "approuve": True,
+            "parcours": matiere.get("parcours"),
+            "niveau": matiere.get("niveau")
+        }).sort("nom", 1).limit(5))  # Limiter à 5 étudiants pour l'affichage
+        
+        # Récupérer les notes pour ces étudiants dans cette matière
+        for etudiant in etudiants:
+            note = notes_collection.find_one({
+                "numero_etudiant": etudiant["numero"],
+                "id_matiere": matiere["_id"]
+            })
+            
+            if note:
+                dernieres_notes.append({
+                    "etudiant_nom": etudiant["nom"],
+                    "etudiant_numero": etudiant["numero"],
+                    "matiere_nom": matiere["nom"],
+                    "note": note["note"]
+                })
+    
+    # Limiter à 10 dernières notes pour l'affichage
+    dernieres_notes = dernieres_notes[:10]
 
     return render_template("enseignant/enseignant_dashboard.html", 
                           user=user, 
@@ -60,10 +88,11 @@ def dashboard():
                           reclamations_count=reclamations_count,
                           total_matieres=total_matieres,
                           total_etudiants=total_etudiants,
-                          total_notes=total_notes)
+                          total_notes=total_notes,
+                          dernieres_notes=dernieres_notes)
 
 # ROUTE POUR AFFICHER LES NOTES
-@enseignant_bp.route('/matiere/<matiere_id>/notes', methods=['GET'])
+@enseignant_bp.route('/matiere/<matiere_id>/notes', methods=['GET', 'POST'])
 def gerer_notes(matiere_id):
     if "user_email" not in session:
         return redirect(url_for("auth.connexion"))
@@ -86,23 +115,74 @@ def gerer_notes(matiere_id):
 
     # Notes existantes pour la matière
     notes_cursor = notes_collection.find({"id_matiere": matiere_id_obj})
-    notes = {note["numero_etudiant"]: note["note"] for note in notes_cursor}
+    
+    # Créer un dictionnaire avec l'ID de l'étudiant comme clé
+    notes = {}
+    for note in notes_cursor:
+        # Récupérer l'étudiant correspondant à ce numéro
+        etudiant = infos_collection.find_one({"numero": note["numero_etudiant"], "role": "etudiant"})
+        if etudiant:
+            # Utiliser l'ID de l'étudiant comme clé
+            notes[str(etudiant["_id"])] = note["note"]
+    
+    # Traitement du formulaire de soumission des notes
+    if request.method == 'POST':
+        for key, value in request.form.items():
+            if key.startswith('note_') and value.strip():
+                etudiant_id = key.replace('note_', '')
+                etudiant = infos_collection.find_one({"_id": ObjectId(etudiant_id)})
+                
+                if etudiant:
+                    try:
+                        # Convertir en nombre et vérifier la plage
+                        note_value = float(value)
+                        if 0 <= note_value <= 20:
+                            # Vérifier si une note existe déjà
+                            existing_note = notes_collection.find_one({
+                                "numero_etudiant": etudiant["numero"],
+                                "id_matiere": matiere_id_obj
+                            })
+                            
+                            if existing_note:
+                                # Mettre à jour la note existante
+                                notes_collection.update_one(
+                                    {"_id": existing_note["_id"]},
+                                    {"$set": {"note": note_value}}
+                                )
+                            else:
+                                # Créer une nouvelle note
+                                notes_collection.insert_one({
+                                    "numero_etudiant": etudiant["numero"],
+                                    "id_matiere": matiere_id_obj,
+                                    "note": note_value
+                                })
+                            
+                            # Mettre à jour le dictionnaire des notes pour l'affichage
+                            notes[etudiant_id] = note_value
+                            
+                            # Recalculer la moyenne de l'étudiant
+                            from models.notes_model import calculer_moyenne_complete
+                            moyenne, _ = calculer_moyenne_complete(etudiant["numero"])
+                            infos_collection.update_one(
+                                {"_id": etudiant["_id"]},
+                                {"$set": {"moyenne": moyenne}}
+                            )
+                    except ValueError:
+                        flash(f"Valeur invalide pour l'étudiant {etudiant['nom']}", "error")
+        
+        flash("Notes enregistrées avec succès", "success")
+        return redirect(url_for('enseignant.gerer_notes', matiere_id=matiere_id))
     
     # Récupérer les réclamations pour le compteur
     reclamations = list(reclamation_collection.find({"enseignant_nom": user["nom"], "status": "En attente"}))
     reclamations_count = len(reclamations)
-    
-    # Récupérer les matières pour le menu déroulant
-    matieres = matieres_collection.find({"professeur": user["nom"]})
 
     return render_template("enseignant/enseignant_notes_matiere.html", 
-        matiere=matiere,
-        etudiants=etudiants,
-        notes=notes,  # Changé de note_dict à notes
-        user=user,
-        reclamations_count=reclamations_count,
-        matieres=matieres
-    )
+                          matiere=matiere,
+                          etudiants=etudiants,
+                          notes=notes,
+                          user=user,
+                          reclamations_count=reclamations_count)
 
 # ROUTE POUR ENREGISTRER/MODIFIER LES NOTES
 @enseignant_bp.route('/matiere/<matiere_id>/notes/update', methods=['POST'])

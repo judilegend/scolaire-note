@@ -98,7 +98,45 @@ block content %}
   </div>
 </div>
 
-{% if reclamations %}
+<!-- Nouvelle section pour afficher les dernières notes saisies -->
+{% if dernieres_notes %}
+<div class="card">
+  <h3><i class="fas fa-clipboard-check"></i> Dernières Notes Saisies</h3>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th><i class="fas fa-user-graduate"></i> Étudiant</th>
+          <th><i class="fas fa-book"></i> Matière</th>
+          <th><i class="fas fa-star"></i> Note</th>
+          <th><i class="fas fa-cogs"></i> Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for note in dernieres_notes %}
+        <tr>
+          <td>{{ note.etudiant_nom }}</td>
+          <td>{{ note.matiere_nom }}</td>
+          <td><strong>{{ note.note }}</strong></td>
+          <td>
+            {% for matiere in matieres %} {% if matiere.nom == note.matiere_nom
+            %}
+            <a
+              href="{{ url_for('enseignant.gerer_notes', matiere_id=matiere._id) }}"
+              class="btn btn-primary btn-sm"
+            >
+              <i class="fas fa-edit"></i> Modifier
+            </a>
+            {% endif %} {% endfor %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %} {% if reclamations %}
 <div class="card">
   <h3><i class="fas fa-bell"></i> Réclamations récentes</h3>
 
