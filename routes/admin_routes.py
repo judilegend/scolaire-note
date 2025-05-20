@@ -649,15 +649,28 @@ def publier_resultats():
             "approuve": True
         })
 
-        for e in resultats:
-            # Utiliser la moyenne déjà calculée et stockée dans la base de données
-            etudiants.append({
+    for e in resultats:
+        moyenne = e.get("moyenne", 0)
+        if moyenne >= 10:
+            recommandation = "Admis"
+        else:
+            recommandation = "Non AAdmis"
+                
+            # Mettre à jour la recommandation dans la base de données
+        infos_collection.update_one(
+            {"_id": e["_id"]},
+            {"$set": {"recommandation": recommandation}}
+            )
+            
+        etudiants.append({
                 "numero": e.get("numero", ""),
                 "nom": e.get("nom", ""),
                 "email": e.get("email", ""),
                 "parcours": e.get("parcours", ""),
                 "niveau": e.get("niveau", ""),
-                "moyenne": e.get("moyenne", 0)
+                "moyenne": e.get("moyenne", 0),
+                "recommandation": recommandation
+
             })
 
         if confirmer:
