@@ -8,6 +8,18 @@
 <div class="card">
   <h2><i class="fas fa-user-edit"></i> Modifier les informations de {{ etudiant.nom }}</h2>
   
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-messages">
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">
+            <i class="fas fa-info-circle"></i> {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+  
   <form method="POST">
     <div class="form-group">
       <label><i class="fas fa-id-card"></i> Numéro de carte :</label>
@@ -60,6 +72,28 @@
     display: flex;
     gap: 15px;
     margin-top: 30px;
+  }
+  
+  .flash-messages {
+    margin-bottom: 20px;
+  }
+  
+  .alert {
+    padding: 15px;
+    border-radius: 10px;
+    margin: 10px 0;
+  }
+  
+  .alert-success {
+    background-color: rgba(46, 138, 103, 0.1);
+    color: var(--primary-color);
+    border-left: 4px solid var(--primary-color);
+  }
+  
+  .alert-error {
+    background-color: rgba(231, 76, 60, 0.1);
+    color: var(--accent-color);
+    border-left: 4px solid var(--accent-color);
   }
 </style>
 {% endblock %}
