@@ -335,3 +335,31 @@ def supprimer_reclamations_matiere(matiere_id):
 
     flash(f"{resultat.deleted_count} réclamation(s) supprimée(s) pour la matière {matiere['nom']}.", "success")
     return redirect(url_for("enseignant.liste_reclamations", matiere_id=matiere_id))
+
+# Toutes les réclamations de l'enseignant
+@enseignant_bp.route('/reclamations')
+def toutes_reclamations():
+    email = session.get('user_email')
+    enseignant = infos_collection.find_one({"email": email, "role": "enseignant"})
+    
+    if not enseignant:
+        return redirect(url_for("auth.connexion"))
+
+    nom_enseignant = enseignant.get("nom")
+    
+    reclamations = list(reclamation_collection.find({
+        "enseignant_nom": nom_enseignant
+    }))
+    
+    reclamations_en_attente = list(reclamation_collection.find({"enseignant_nom": nom_enseignant, "status": "En attente"}))
+    reclamations_count = len(reclamations_en_attente)
+    
+    # Récupérer les matières pour le menu déroulant
+    matieres = matieres_collection.find({"professeur": nom_enseignant})
+
+    return render_template("enseignant/enseignant_reclamations.html",
+                           enseignant=enseignant,
+                           user=enseignant,
+                           reclamations=reclamations,
+                           reclamations_count=reclamations_count,
+                           matieres=matieres)
