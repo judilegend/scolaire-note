@@ -202,6 +202,72 @@ def modifier_etudiant(email):
     return render_template("admin/modifier_etudiant.html", etudiant=etudiant) # etudiant=etudiant pour passer les informations de l'étudiant à la template
 '''
 
+# Modifier un étudiant
+@admin_bp.route('/modifier_etudiant/<etudiant_id>', methods=['GET', 'POST'])
+def modifier_etudiant(etudiant_id):
+    if 'user_email' not in session or session.get('role') != 'admin':
+        return redirect(url_for('auth.connexion'))
+    
+    # Récupérer les informations de l'utilisateur connecté
+    user_id = session.get('user_id')
+    user = infos_collection.find_one({"_id": ObjectId(user_id)})
+    
+    # Récupérer l'étudiant par son numéro
+    etudiant = infos_collection.find_one({'numero': etudiant_id, 'role': 'etudiant', 'approuve': True})
+    if not etudiant:
+        flash("Étudiant introuvable", "error")
+        return redirect(url_for('admin.liste_etudiants'))
+    
+    # Définir les niveaux et parcours disponibles
+    niveaux = ["L1", "L2", "L3", "M1", "M2"]
+    parcours_list = ["GB", "ASR", "GID", "OCC", "MDI", "IG"]
+    
+    if request.method == 'POST':
+        numero = request.form['numero']
+        nom = request.form['nom']
+        parcours = request.form['parcours']
+        niveau = request.form['niveau']
+        email = request.form['email']
+        
+        # Vérifier si le numéro est déjà utilisé par un autre étudiant
+        if numero != etudiant['numero'] and infos_collection.find_one({'numero': numero, 'role': 'etudiant', '_id': {'$ne': etudiant['_id']}}):
+            flash("Ce numéro d'étudiant est déjà utilisé", "error")
+            return render_template("admin/modifier_etudiant.html", 
+                                  etudiant=etudiant, 
+                                  niveaux=niveaux, 
+                                  parcours_list=parcours_list,
+                                  user=user)
+        
+        # Vérifier si l'email est déjà utilisé par un autre utilisateur
+        if email != etudiant['email'] and infos_collection.find_one({'email': email, '_id': {'$ne': etudiant['_id']}}):
+            flash("Cet email est déjà utilisé", "error")
+            return render_template("admin/modifier_etudiant.html", 
+                                  etudiant=etudiant, 
+                                  niveaux=niveaux, 
+                                  parcours_list=parcours_list,
+                                  user=user)
+        
+        # Mettre à jour les informations de l'étudiant
+        infos_collection.update_one(
+            {'_id': etudiant['_id']},
+            {'$set': {
+                'numero': numero,
+                'nom': nom,
+                'parcours': parcours,
+                'niveau': niveau,
+                'email': email
+            }}
+        )
+        
+        flash("Informations de l'étudiant mises à jour avec succès", "success")
+        return redirect(url_for('admin.liste_etudiants'))
+    
+    return render_template("admin/modifier_etudiant.html", 
+                          etudiant=etudiant, 
+                          niveaux=niveaux, 
+                          parcours_list=parcours_list,
+                          user=user)
+
 #Gestion des matières
 
 @admin_bp.route('/matieres', methods=['GET', 'POST'])
