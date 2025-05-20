@@ -543,8 +543,18 @@ def detail_notes(numero_etudiant):
     user_id = session.get('user_id')
     user = infos_collection.find_one({"_id": ObjectId(user_id)})
 
-    etudiant = get_nom_etudiant()
-    matieres = get_all_matieres()
+    # Récupérer l'étudiant par son numéro
+    etudiant = infos_collection.find_one({"numero": numero_etudiant, "role": "etudiant"})
+    if not etudiant:
+        flash("Étudiant introuvable", "error")
+        return redirect(url_for('admin.voir_moyennes'))
+
+    # Récupérer uniquement les matières correspondant au parcours et niveau de l'étudiant
+    matieres = list(matieres_collection.find({
+        "parcours": etudiant.get("parcours"),
+        "niveau": etudiant.get("niveau")
+    }))
+
     notes = get_notes_etudiant(numero_etudiant)
 
     # Associer les notes avec les matières
@@ -558,8 +568,8 @@ def detail_notes(numero_etudiant):
             "id_note": str(note_matiere['_id']) if note_matiere else None
         })
 
-    return render_template("admin/detail_notes.html", etudiant=etudiant, details=details,user=user)
 
+    return render_template("admin/detail_notes.html", etudiant=etudiant, details=details, user=user)
 # Modifier note
 @admin_bp.route("/modifier_note/<note_id>", methods=["GET", "POST"])
 def modifier_note(note_id):
