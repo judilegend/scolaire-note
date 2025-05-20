@@ -9,6 +9,7 @@ block content %}
         <i class="fas fa-book"></i>
       </div>
     </div>
+    <div class="stat-value">{{ total_matieres }}</div>
     <div class="stat-description">Nombre total de matières</div>
   </div>
 
@@ -78,7 +79,12 @@ block content %}
               href="{{ url_for('enseignant.liste_reclamations', matiere_id=matiere._id) }}"
               class="btn btn-warning btn-sm"
             >
-              <i class="fas fa-comment-dots"></i> Réclamations
+              <i class="fas fa-comment-dots"></i> Réclamations {% set
+              reclamations_matiere = reclamations|selectattr('matiere_id',
+              'equalto', matiere._id|string)|list %} {% if
+              reclamations_matiere|length > 0 %}
+              <span class="badge">{{ reclamations_matiere|length }}</span>
+              {% endif %}
             </a>
           </td>
         </tr>
@@ -134,7 +140,7 @@ block content %}
   {% if reclamations|length > 3 %}
   <div style="text-align: center; margin-top: 20px">
     <a
-      href="{{ url_for('enseignant.toutes_reclamations') }}"
+      href="{{ url_for('enseignant.liste_reclamations', matiere_id=reclamations[0].matiere_id) }}"
       class="btn btn-secondary"
     >
       <i class="fas fa-list"></i> Voir toutes les réclamations ({{
@@ -147,6 +153,7 @@ block content %}
     <form
       method="POST"
       action="{{ url_for('enseignant.supprimer_toutes_reclamations_enseignant') }}"
+      onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer toutes les réclamations ?');"
     >
       <button class="btn btn-danger btn-delete" type="submit">
         <i class="fas fa-trash-alt"></i> Supprimer toutes les réclamations
