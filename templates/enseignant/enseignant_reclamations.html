@@ -1,129 +1,168 @@
-{% extends "enseignant/layout.html" %} {% block title %}Réclamations - {{
-matiere.nom }}{% endblock %} {% block page_title %}Réclamations - {{ matiere.nom
-}}{% endblock %} {% block content %}
+{% extends "enseignant/layout.html" %} {% block title %} {% if matiere %}
+Réclamations - {{ matiere.nom }} {% else %} Toutes les réclamations {% endif %}
+{% endblock %} {% block page_title %} {% if matiere %} Réclamations - {{
+matiere.nom }} {% else %} Toutes les réclamations {% endif %} {% endblock %} {%
+block content %}
 <div class="card">
-  <h3><i class="fas fa-info-circle"></i> Informations sur la matière</h3>
-
-  <div
-    class="matiere-info"
-    style="
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-      margin-bottom: 20px;
-    "
-  >
-    <div>
-      <p>
-        <strong><i class="fas fa-book"></i> Matière:</strong> {{ matiere.nom }}
-      </p>
+  <div class="card-header">
+    {% if matiere %}
+    <h3>
+      <i class="fas fa-comment-dots"></i> Réclamations pour {{ matiere.nom }}
+    </h3>
+    <div class="matiere-info">
+      <span class="badge badge-info"
+        ><i class="fas fa-graduation-cap"></i> {{ matiere.niveau }}</span
+      >
+      <span class="badge badge-info"
+        ><i class="fas fa-bookmark"></i> {{ matiere.parcours }}</span
+      >
     </div>
-    <div>
-      <p>
-        <strong><i class="fas fa-graduation-cap"></i> Niveau:</strong> {{
-        matiere.niveau }}
-      </p>
-    </div>
-    <div>
-      <p>
-        <strong><i class="fas fa-code-branch"></i> Parcours:</strong> {{
-        matiere.parcours }}
-      </p>
-    </div>
-    <div>
-      <p>
-        <strong><i class="fas fa-balance-scale"></i> Coefficient:</strong> {{
-        matiere.coefficient }}
-      </p>
-    </div>
+    {% else %}
+    <h3><i class="fas fa-comment-dots"></i> Toutes les réclamations</h3>
+    {% endif %}
   </div>
-
-  <div
-    style="display: flex; justify-content: space-between; align-items: center"
-  >
-    <a
-      href="{{ url_for('enseignant.gerer_notes', matiere_id=matiere._id) }}"
-      class="btn btn-primary"
-    >
-      <i class="fas fa-pen-to-square"></i> Gérer les notes
-    </a>
-
-    <a href="{{ url_for('enseignant.dashboard') }}" class="btn btn-secondary">
-      <i class="fas fa-arrow-left"></i> Retour au tableau de bord
-    </a>
-  </div>
-</div>
-
-<div class="card">
-  <h3><i class="fas fa-comment-dots"></i> Liste des réclamations</h3>
 
   {% if reclamations %}
-  <ul class="reclamation-list">
-    {% for rec in reclamations %}
-    <li class="reclamation-item">
-      <div class="reclamation-header">
-        <div class="reclamation-info">
-          <span class="reclamation-student"
-            ><i class="fas fa-user-graduate"></i> {{ rec.nom_etudiant }}</span
-          >
-          <span class="reclamation-numero"
-            ><i class="fas fa-id-card"></i> Numéro: {{ rec.numero_etudiant
-            }}</span
-          >
-        </div>
-        <span class="reclamation-date"
-          >{{ rec.date|default('Récemment') }}</span
-        >
-      </div>
-      <div class="reclamation-content">
-        <i
-          class="fas fa-quote-left"
-          style="opacity: 0.3; margin-right: 5px"
-        ></i>
-        {{ rec.commentaire }}
-      </div>
-      <div class="reclamation-actions">
-        <a
-          href="{{ url_for('enseignant.gerer_notes', matiere_id=matiere._id) }}"
-          class="btn btn-primary btn-sm"
-        >
-          <i class="fas fa-pen-to-square"></i> Modifier la note
-        </a>
-        <a
-          href="{{ url_for('enseignant.repondre_reclamation', reclamation_id=rec._id, action='refuser') }}"
-          class="btn btn-danger btn-sm btn-delete"
-        >
-          <i class="fas fa-trash-alt"></i> Supprimer
-        </a>
-      </div>
-    </li>
-    {% endfor %}
-  </ul>
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th><i class="fas fa-user-graduate"></i> Étudiant</th>
+          {% if not matiere %}
+          <th><i class="fas fa-book"></i> Matière</th>
+          {% endif %}
+          <th><i class="fas fa-comment"></i> Commentaire</th>
+          <th><i class="fas fa-clock"></i> Statut</th>
+          <th><i class="fas fa-cogs"></i> Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for reclamation in reclamations %}
+        <tr>
+          <td>{{ reclamation.nom_etudiant }}</td>
+          {% if not matiere %}
+          <td>{{ reclamation.nom_matiere }}</td>
+          {% endif %}
+          <td>{{ reclamation.commentaire }}</td>
+          <td>
+            {% if reclamation.status == "En attente" %}
+            <span class="badge badge-warning">{{ reclamation.status }}</span>
+            {% elif reclamation.status == "Acceptée" %}
+            <span class="badge badge-success">{{ reclamation.status }}</span>
+            {% elif reclamation.status == "Refusée" %}
+            <span class="badge badge-danger">{{ reclamation.status }}</span>
+            {% endif %}
+          </td>
+          <td class="actions">
+            {% if reclamation.status == "En attente" %}
+            <a
+              href="{{ url_for('enseignant.repondre_reclamation', reclamation_id=reclamation._id, action='accepter') }}"
+              class="btn btn-sm btn-success"
+              onclick="return confirm('Accepter cette réclamation ?');"
+            >
+              <i class="fas fa-check"></i> Accepter
+            </a>
+            <a
+              href="{{ url_for('enseignant.repondre_reclamation', reclamation_id=reclamation._id, action='refuser') }}"
+              class="btn btn-sm btn-danger"
+              onclick="return confirm('Refuser cette réclamation ?');"
+            >
+              <i class="fas fa-times"></i> Refuser
+            </a>
+            {% endif %}
+            <form
+              method="POST"
+              action="{{ url_for('enseignant.supprimer_reclamation', reclamation_id=reclamation._id) }}"
+              style="display: inline"
+              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette réclamation ?');"
+            >
+              <button type="submit" class="btn btn-sm btn-secondary">
+                <i class="fas fa-trash"></i> Supprimer
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 
-  <div style="text-align: center; margin-top: 20px">
+  <div class="action-buttons">
+    {% if matiere %}
     <form
       method="POST"
-      action="{{ url_for('enseignant.supprimer_reclamations_traitees_matiere', matiere_id=matiere._id) }}
-      >
-      <button class="btn btn-danger btn-delete" type="submit">
-        <i class="fas fa-trash-alt"></i> Supprimer toutes les réclamations de
-        cette matière
+      action="{{ url_for('enseignant.supprimer_reclamations_traitees_matiere', matiere_id=matiere._id) }}"
+      onsubmit="return confirm('Supprimer toutes les réclamations traitées pour cette matière ?');"
+    >
+      <button type="submit" class="btn btn-warning">
+        <i class="fas fa-trash-alt"></i> Supprimer les réclamations traitées
       </button>
     </form>
+
+    <form
+      method="POST"
+      action="{{ url_for('enseignant.supprimer_reclamations_matiere', matiere_id=matiere._id) }}"
+      onsubmit="return confirm('Supprimer TOUTES les réclamations pour cette matière ?');"
+    >
+      <button type="submit" class="btn btn-danger">
+        <i class="fas fa-trash-alt"></i> Supprimer toutes les réclamations
+      </button>
+    </form>
+    {% else %}
+    <form
+      method="POST"
+      action="{{ url_for('enseignant.supprimer_toutes_reclamations_enseignant') }}"
+      onsubmit="return confirm('Supprimer TOUTES vos réclamations ?');"
+    >
+      <button type="submit" class="btn btn-danger">
+        <i class="fas fa-trash-alt"></i> Supprimer toutes les réclamations
+      </button>
+    </form>
+    {% endif %}
   </div>
   {% else %}
-  <div class="no-reclamations">
-    <i
-      class="fas fa-check-circle"
-      style="
-        font-size: 3rem;
-        color: var(--success);
-        display: block;
-        margin-bottom: 15px;
-      "
-    ></i>
-    <p>Aucune réclamation pour cette matière.</p>
+  <div class="empty-state">
+    <i class="fas fa-comment-slash empty-icon"></i>
+    <p>Aucune réclamation trouvée.</p>
   </div>
   {% endif %}
 </div>
+
+<style>
+  .card-header {
+    margin-bottom: 20px;
+  }
+
+  .matiere-info {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+  }
+
+  .action-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .actions {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 0;
+    color: var(--text-light);
+  }
+
+  .empty-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    opacity: 0.5;
+  }
+</style>
 {% endblock %}

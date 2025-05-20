@@ -107,3 +107,12 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
+document.addEventListener("DOMContentLoaded", function () {
+  const reclamationsLink = document.getElementById("reclamations-link");
+  if (reclamationsLink) {
+    reclamationsLink.addEventListener("click", function (e) {
+      e.preventDefault();
+      window.location.href = "/enseignant/reclamations";
+    });
+  }
+});
