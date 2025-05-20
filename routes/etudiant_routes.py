@@ -248,9 +248,11 @@ def generer_pdf(etudiant_id):
 '''
 @student_bp.route('/generer_pdf/<etudiant_id>')
 def generer_pdf(etudiant_id):
-    # if 'user_email' not in session or session.get('role') != 'admin':
-    #     return redirect(url_for('auth.connexion'))
+    # Utiliser l'ID passé en paramètre au lieu de le récupérer de la session
+    # etudiant_id = session.get('user_id')  # Cette ligne est à supprimer
     
+    print(f"Etudiant ID: {etudiant_id}")
+
     etudiant = infos_collection.find_one({"_id": ObjectId(etudiant_id)})
     if not etudiant:
         return "Étudiant introuvable", 404
@@ -272,6 +274,7 @@ def generer_pdf(etudiant_id):
     notes_par_nom = {}
     for matiere in matieres:
         matiere_id = str(matiere["_id"])
+
         notes_par_nom[matiere["nom"]] = notes.get(matiere_id, "—")
 
     html = render_template("admin/pdf_template.html",
@@ -282,21 +285,17 @@ def generer_pdf(etudiant_id):
                            rang=None,
                            current_date=datetime.now().strftime("%d/%m/%Y"))
 
-    # Chemin du fichier PDF à sauvegarder
+    # Créer le dossier bulletins s'il n'existe pas
     dossier_bulletins = "bulletins"
-    
-    # Créer le dossier s'il n'existe pas
     if not os.path.exists(dossier_bulletins):
         os.makedirs(dossier_bulletins)
         
+    # Chemin du fichier PDF à sauvegarder
     nom_fichier = f"Bulletin_{etudiant['numero']}.pdf"
     chemin_fichier = os.path.join(dossier_bulletins, nom_fichier)
 
-    # Configuration de pdfkit avec le chemin explicite vers wkhtmltopdf
-    config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')  # Ajustez ce chemin selon votre installation
-    
-    # Génère et sauvegarde le PDF dans le dossier
-    pdfkit.from_string(html, chemin_fichier, configuration=config)
+    # Génére et sauvegarde le PDF dans le dossier
+    pdfkit.from_string(html, chemin_fichier)
 
     # Envoie le fichier PDF en réponse
     return send_file(chemin_fichier, as_attachment=False)
